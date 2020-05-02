@@ -52,6 +52,7 @@ export function updateChildProps(dom: Element | Array<Element | Node>, newProps:
     if (!dom) return;
     if (Array.isArray(dom)) {
         dom.forEach((f: Element | Node) => {
+            if (!(<Element>f).attributes) return;
             n = f.nodeName.toLowerCase();
             nn = (<Element>f).getAttribute("name");
             idn = (<Element>f).id ? `${n}[id="${(<Element>f).id}"]` : "";
@@ -66,6 +67,7 @@ export function updateChildProps(dom: Element | Array<Element | Node>, newProps:
             }
         });
     } else {
+        if (!dom.attributes) return;
         n = dom.nodeName.toLowerCase();
         nn = (<Element>dom).getAttribute("name");
         idn = (<Element>dom).id ? `${n}[id="${(<Element>dom).id}"]` : "";
