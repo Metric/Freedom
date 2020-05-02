@@ -232,25 +232,37 @@ export const setAccessor = (node: any, name: string, old: any, value: any, paren
     }
 };
 
-export const setAccessorSelf = (node: any) => {
-    if (!node.attributes) return;
-    let parent = node.parentNode;
-    while (parent) {
-        if (parent.__fc) {
-            parent = parent.__fc;
-            break;
-        }
-        parent = parent.parentNode;
-    }
+export const getProps = (node: any): any => {
+    const props: any = {};
+    if (!node.attributes) return props;
     const attrs = Array.from(node.attributes);
     for (let i = 0; i < attrs.length; ++i) {
         const attr: any = attrs[i];
-        setAccessor(node, attr.name, null, attr.value, parent);
+        props[attr.name] = attr.value;
     }
     const custom = node.customAttributes || {};
     for (let k in custom) {
-        setAccessor(node, k, null, custom[k], parent);
+        props[k] = custom[k];
     }
+    return props;
+};
+
+export const setAccessorSelf = (node: any, props: any, parent: any) => {
+    if (!node.attributes) return;
+    if (!parent) {
+        parent = node.parentNode;
+        while (parent) {
+            if (parent.__fc) {
+                parent = parent.__fc;
+                break;
+            }
+            parent = parent.parentNode;
+        }
+    }
+    for (let k in props || {}) {
+        setAccessor(node, k, node.getAttribute(k) || node.customAttributes[k], props[k], parent);
+    }
+    node.__fparent = parent;
 };
 
 export function gather(ele: any) {

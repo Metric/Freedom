@@ -68,7 +68,6 @@ export const diff = (old: any, value: any) => {
     if (value) {
         if (old && old.parentNode) old.parentNode.replaceChild(value, old);
         collect(old);
-        value.__fskip = false;
     } else collect(old);
 
     return value;

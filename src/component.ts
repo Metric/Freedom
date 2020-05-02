@@ -1,4 +1,4 @@
-import { setAccessor, gather, extend } from "./dom";
+import { setAccessor, gather, extend, setAccessorSelf } from "./dom";
 import { render } from "./index";
 import { idiff } from "./diff";
 
@@ -17,6 +17,29 @@ export function getSubComponents(dom: any) {
         }
     }
     return sub;
+}
+
+export function updateChildProps(dom: any, newProps: any, parent: any) {
+    let n = null;
+    if (Array.isArray(dom)) {
+        dom.forEach((f) => {
+            n = f.nodeName.toLowerCase();
+            if (f.__fc && newProps[n]) {
+                f.__fc.setProps(newProps[n]);
+            } else if (!f.__fc && newProps[n]) {
+                setAccessorSelf(f, newProps[n], parent);
+            }
+            if (!f.__fc) updateChildProps(getSubComponents(f), newProps, parent);
+        });
+    } else {
+        n = dom.nodeName.toLowerCase();
+        if (dom.__fc && newProps[n]) {
+            dom.__fc.setProps(newProps[n]);
+        } else if (!dom.__fc && newProps[n]) {
+            setAccessorSelf(dom, newProps[n], parent);
+        }
+        if (!dom.__fc) updateChildProps(getSubComponents(dom), newProps, parent);
+    }
 }
 
 export class Component {
@@ -71,7 +94,8 @@ export class Component {
         if (!this.dom.__fskip && !skip) this.componentDidMount();
     }
 
-    _stateRender(oldProps: any, newProps: any) {
+    _render() {
+        const newChildProps = this.renderProps();
         let d: any = this.render();
         if (d == null) {
             this.dom.innerHTML = "";
@@ -80,40 +104,22 @@ export class Component {
             this.dom.textContent = d;
             this.componentDidUpdate();
         } else {
+            if (newChildProps) updateChildProps(d, newChildProps, this);
             let c = null;
             if (Array.isArray(d)) {
                 d = Array.from(d);
                 for (let i = 0; i < d.length; ++i) {
                     c = d[i];
-                    if (c.__fc) {
-                        c.__fc.setProps(this.state);
-                        c.__fc._initialRender(true);
-                    } else {
-                        getSubComponents(c).forEach((f) => {
-                            f.setProps(this.state);
-                            f._initialRender(true);
-                        });
-                        c.__fskip = true;
-                        if (typeof c === "object") render(c);
-                    }
+                    c.__fskip = true;
+                    render(c);
                 }
             } else {
-                if (d.__fc) {
-                    d.__fc.setProps(this.state);
-                    d.__fc._initialRender(true);
-                } else {
-                    getSubComponents(d).forEach((f) => {
-                        f.setProps(this.state);
-                        f._initialRender(true);
-                    });
-                    d.__fskip = true;
-                    render(d);
-                }
+                d.__fskip = true;
+                render(d);
             }
             idiff(this.dom, d);
             render(this.dom);
         }
-        this.onStateChanged(oldProps, newProps);
     }
 
     onStateChanged(oldState: any, newState: any) {}
@@ -137,7 +143,8 @@ export class Component {
             this.state = newProps;
 
             if (didChange) {
-                this._stateRender(oldProps, newProps);
+                this._render();
+                this.onStateChanged(oldProps, newProps);
             }
             res();
         });
@@ -162,16 +169,19 @@ export class Component {
             this.props = newProps;
             if (didChange) {
                 this.onPropsChanged(oldProps, newProps);
+                const mapping: any = {};
+                let stateChanged = false;
                 for (let k in this.props) {
                     if (oldProps[k] !== this.props[k]) {
                         setAccessor(this.dom, k, oldProps[k], this.props[k], this);
                         if (this._propStateMap.has(k)) {
-                            const mapping: any = {};
                             mapping[this._propStateMap.get(k)] = this.props[k];
-                            this.setState(mapping);
+                            stateChanged = true;
                         }
                     }
                 }
+                if (stateChanged) this.setState(mapping);
+                else this._render();
             }
             res();
         });
@@ -181,6 +191,10 @@ export class Component {
     componentDidUpdate() {}
     componentWillUnmount() {}
     componentDidMount() {}
+
+    renderProps(): any {
+        return null;
+    }
 
     render(): any {
         return this.children;

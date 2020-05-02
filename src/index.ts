@@ -1,4 +1,4 @@
-import { createElement, setAccessorSelf } from "./dom";
+import { createElement, setAccessorSelf, getProps } from "./dom";
 import { Component } from "./component";
 
 export function render(base: HTMLElement) {
@@ -15,7 +15,7 @@ export function render(base: HTMLElement) {
     n = bc.nodeName.toLowerCase();
     if (!bc.__fc) {
         if (window[n]) new window[n](bc);
-        else setAccessorSelf(base);
+        else if (!bc.__fparent) setAccessorSelf(bc, getProps(bc), null);
     } else if (!bc.__fskip) {
         bc.__fc.componentDidUpdate();
     }
@@ -25,7 +25,7 @@ export function render(base: HTMLElement) {
         n = c.nodeName.toLowerCase();
         if (!c.__fc) {
             if (window[n]) new window[n](c);
-            else setAccessorSelf(c);
+            else if (!c.__fparent) setAccessorSelf(c, getProps(c), null);
         } else if (!c.__fskip) {
             c.__fc.componentDidUpdate();
         }
