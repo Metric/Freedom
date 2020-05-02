@@ -1,5 +1,5 @@
 import { createElement, setAccessorSelf } from "./dom";
-import { Component as component } from "./component";
+import { Component } from "./component";
 
 export function render(base: HTMLElement) {
     let n: string = null,
@@ -42,4 +42,4 @@ const React = {
 };
 
 export default React;
-export const Component = component;
+export { Component };
