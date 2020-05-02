@@ -16,8 +16,6 @@ export function render(base: HTMLElement) {
     if (!bc.__fc) {
         if (window[n]) new window[n](bc);
         else if (!bc.__fparent) setAccessorSelf(bc, getProps(bc), null);
-    } else if (!bc.__fskip) {
-        bc.__fc.componentDidUpdate();
     }
 
     while (stack.length) {
@@ -26,8 +24,6 @@ export function render(base: HTMLElement) {
         if (!c.__fc) {
             if (window[n]) new window[n](c);
             else if (!c.__fparent) setAccessorSelf(c, getProps(c), null);
-        } else if (!c.__fskip) {
-            c.__fc.componentDidUpdate();
         }
         for (let i = 0; i < c.children.length; ++i) {
             stack.unshift(c.children.item(i));

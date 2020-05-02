@@ -28,8 +28,8 @@ export function updateChildProps(dom: any, newProps: any, parent: any) {
                 f.__fc.setProps(newProps[n]);
             } else if (!f.__fc && newProps[n]) {
                 setAccessorSelf(f, newProps[n], parent);
+                if (typeof newProps[n] === "object") updateChildProps(gather(f), newProps[n] || {}, parent);
             }
-            if (!f.__fc) updateChildProps(getSubComponents(f), newProps, parent);
         });
     } else {
         n = dom.nodeName.toLowerCase();
@@ -37,8 +37,8 @@ export function updateChildProps(dom: any, newProps: any, parent: any) {
             dom.__fc.setProps(newProps[n]);
         } else if (!dom.__fc && newProps[n]) {
             setAccessorSelf(dom, newProps[n], parent);
+            if (typeof newProps[n] === "object") updateChildProps(gather(dom), newProps[n] || {}, parent);
         }
-        if (!dom.__fc) updateChildProps(getSubComponents(dom), newProps, parent);
     }
 }
 
@@ -99,10 +99,8 @@ export class Component {
         let d: any = this.render();
         if (d == null) {
             this.dom.innerHTML = "";
-            this.componentDidUpdate();
         } else if (typeof d !== "object") {
             this.dom.textContent = d;
-            this.componentDidUpdate();
         } else {
             if (newChildProps) updateChildProps(d, newChildProps, this);
             let c = null;
@@ -120,6 +118,7 @@ export class Component {
             idiff(this.dom, d);
             render(this.dom);
         }
+        this.componentDidUpdate();
     }
 
     onStateChanged(oldState: any, newState: any) {}
