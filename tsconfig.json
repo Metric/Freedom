@@ -1,0 +1,7 @@
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "inlineSourceMap": true,
+        "module": "ES2020"
+    }
+}
