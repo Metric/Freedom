@@ -2,13 +2,16 @@
     "name": "freedomjs",
     "version": "0.1.0",
     "description": "free the dom from your code as it should be",
-    "main": "index.ts",
+    "main": "build/index.js",
     "directories": {
         "test": "test"
     },
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "build": "tsc"
     },
     "author": "",
-    "license": "MIT"
+    "license": "MIT",
+    "devDependencies": {
+        "typescript": "^3.8.3"
+    }
 }
