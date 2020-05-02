@@ -1,0 +1,14 @@
+{
+    "name": "freedomjs",
+    "version": "0.1.0",
+    "description": "free the dom from your code as it should be",
+    "main": "index.ts",
+    "directories": {
+        "test": "test"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "MIT"
+}
