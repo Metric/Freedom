@@ -187,10 +187,11 @@ export const setAccessor = (node, name, old, value, parent) => {
         }
     }
     else if (name[0] === "o" && name[1] === "n") {
-        let f = parent, p, s, spl;
+        let f, p, s, spl;
         let useCapture = name !== (name = name.replace(/capture$/, ""));
         name = name.toLowerCase().substring(2);
         if (old) {
+            f = parent;
             if (typeof old === "string") {
                 if (!f)
                     return;
@@ -208,6 +209,7 @@ export const setAccessor = (node, name, old, value, parent) => {
             node.removeAttribute("on" + name);
         }
         if (value) {
+            f = parent;
             if (typeof value === "string") {
                 if (!f)
                     return;

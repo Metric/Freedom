@@ -172,13 +172,11 @@ export const setAccessor = (node: any, name: string, old: any, value: any, paren
             node.style.cssText = value || "";
         }
     } else if (name[0] === "o" && name[1] === "n") {
-        let f = parent,
-            p,
-            s,
-            spl;
+        let f, p, s, spl;
         let useCapture = name !== (name = name.replace(/capture$/, ""));
         name = name.toLowerCase().substring(2);
         if (old) {
+            f = parent;
             if (typeof old === "string") {
                 if (!f) return;
                 spl = old.split(".");
@@ -192,6 +190,7 @@ export const setAccessor = (node: any, name: string, old: any, value: any, paren
             node.removeAttribute("on" + name);
         }
         if (value) {
+            f = parent;
             if (typeof value === "string") {
                 if (!f) return;
                 spl = value.split(".");
