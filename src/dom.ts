@@ -175,7 +175,7 @@ export const setAccessor = (node: any, name: string, old: any, value: any, paren
         let f = parent,
             p,
             s,
-            spl = typeof value === "string" ? value.split(".") : value;
+            spl;
         let useCapture = name !== (name = name.replace(/capture$/, ""));
         name = name.toLowerCase().substring(2);
         if (old) {
@@ -194,6 +194,8 @@ export const setAccessor = (node: any, name: string, old: any, value: any, paren
         if (value) {
             if (typeof value === "string") {
                 if (!f) return;
+                spl = value.split(".");
+                p = f;
                 while (spl.length && f) {
                     p = f;
                     s = spl.shift();
