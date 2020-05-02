@@ -37,31 +37,41 @@ export function getSubComponents(dom) {
     return sub;
 }
 export function updateChildProps(dom, newProps, parent) {
-    let n = null;
+    let n = null, idn, cn, nn, value;
     if (!dom)
         return;
     if (Array.isArray(dom)) {
         dom.forEach((f) => {
             n = f.nodeName.toLowerCase();
-            if (f.__fc && newProps[n]) {
-                f.__fc.setProps(newProps[n]);
+            nn = f.getAttribute("name");
+            idn = f.id ? `${n}[id="${f.id}"]` : "";
+            nn = nn ? `${n}[name="${nn}"]` : "";
+            cn = f.className ? `${n}[class="${f.className}"]` : "";
+            value = newProps[idn] || newProps[cn] || newProps[nn] || newProps[n] || {};
+            if (f.__fc && value) {
+                f.__fc.setProps(value);
             }
-            else if (!f.__fc && newProps[n]) {
-                setAccessorSelf(f, newProps[n], parent);
+            else if (!f.__fc && value) {
+                setAccessorSelf(f, value, parent);
                 if (typeof newProps[n] === "object")
-                    updateChildProps(gather(f), newProps[n] || {}, parent);
+                    updateChildProps(gather(f), value, parent);
             }
         });
     }
     else {
         n = dom.nodeName.toLowerCase();
-        if (dom.__fc && newProps[n]) {
-            dom.__fc.setProps(newProps[n]);
+        nn = dom.getAttribute("name");
+        idn = dom.id ? `${n}[id="${dom.id}"]` : "";
+        nn = nn ? `${n}[name="${nn}"]` : "";
+        cn = dom.className ? `${n}[class="${dom.className}"]` : "";
+        value = newProps[idn] || newProps[cn] || newProps[nn] || newProps[n] || {};
+        if (dom.__fc && value) {
+            dom.__fc.setProps(value);
         }
-        else if (!dom.__fc && newProps[n]) {
+        else if (!dom.__fc && value) {
             setAccessorSelf(dom, newProps[n], parent);
             if (typeof newProps[n] === "object")
-                updateChildProps(gather(dom), newProps[n] || {}, parent);
+                updateChildProps(gather(dom), value, parent);
         }
     }
 }

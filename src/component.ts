@@ -44,25 +44,39 @@ export function getSubComponents(dom: any): Array<Component> {
 }
 
 export function updateChildProps(dom: Element | Array<Element | Node>, newProps: any, parent: any) {
-    let n: string = null;
+    let n: string = null,
+        idn: string,
+        cn: string,
+        nn: string,
+        value: any;
     if (!dom) return;
     if (Array.isArray(dom)) {
         dom.forEach((f: Element | Node) => {
             n = f.nodeName.toLowerCase();
-            if ((<any>f).__fc && newProps[n]) {
-                (<any>f).__fc.setProps(newProps[n]);
-            } else if (!(<any>f).__fc && newProps[n]) {
-                setAccessorSelf(<Element>f, newProps[n], parent);
-                if (typeof newProps[n] === "object") updateChildProps(gather(f), newProps[n] || {}, parent);
+            nn = (<Element>f).getAttribute("name");
+            idn = (<Element>f).id ? `${n}[id="${(<Element>f).id}"]` : "";
+            nn = nn ? `${n}[name="${nn}"]` : "";
+            cn = (<Element>f).className ? `${n}[class="${(<Element>f).className}"]` : "";
+            value = newProps[idn] || newProps[cn] || newProps[nn] || newProps[n] || {};
+            if ((<any>f).__fc && value) {
+                (<any>f).__fc.setProps(value);
+            } else if (!(<any>f).__fc && value) {
+                setAccessorSelf(<Element>f, value, parent);
+                if (typeof newProps[n] === "object") updateChildProps(gather(f), value, parent);
             }
         });
     } else {
         n = dom.nodeName.toLowerCase();
-        if ((<any>dom).__fc && newProps[n]) {
-            (<any>dom).__fc.setProps(newProps[n]);
-        } else if (!(<any>dom).__fc && newProps[n]) {
+        nn = (<Element>dom).getAttribute("name");
+        idn = (<Element>dom).id ? `${n}[id="${(<Element>dom).id}"]` : "";
+        nn = nn ? `${n}[name="${nn}"]` : "";
+        cn = (<Element>dom).className ? `${n}[class="${(<Element>dom).className}"]` : "";
+        value = newProps[idn] || newProps[cn] || newProps[nn] || newProps[n] || {};
+        if ((<any>dom).__fc && value) {
+            (<any>dom).__fc.setProps(value);
+        } else if (!(<any>dom).__fc && value) {
             setAccessorSelf(dom, newProps[n], parent);
-            if (typeof newProps[n] === "object") updateChildProps(gather(dom), newProps[n] || {}, parent);
+            if (typeof newProps[n] === "object") updateChildProps(gather(dom), value, parent);
         }
     }
 }
