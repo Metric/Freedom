@@ -24,7 +24,7 @@ export class Component {
         this._propStateMap = new Map();
         this.children = gather(this.dom);
         this.dom.__fc = this;
-        if (this.dom.parentNode?.__fc)
+        if (this.dom.parentNode && this.dom.parentNode.__fc)
             this.parent = this.dom.parentNode.__fc;
         const attrs = Array.from(dom.attributes);
         const custom = this.dom.customAttributes || {};

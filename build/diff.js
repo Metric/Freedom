@@ -5,17 +5,18 @@ export function collect(c) {
         const nc = stack.pop();
         const children = gather(nc);
         children.forEach((c) => stack.unshift(c));
-        if (nc.__fc && !nc.__fskip)
+        if (nc && nc.__fc && !nc.__fskip)
             nc.__fc.componentWillUnmount();
     }
-    if (c?.__fc && !c?.__fskip)
+    if (c && c.__fc && !c.__fskip)
         c.__fc.componentWillUnmount();
-    c?.parentNode?.removeChild(c);
+    if (c && c.parentNode)
+        c.parentNode.removeChild(c);
 }
 export function isSameNodeType(node, value) {
-    if (!node)
+    if (!node || !value)
         return false;
-    return node.nodeName.toLowerCase() === value?.nodeName.toLowerCase();
+    return node.nodeName.toLowerCase() === value.nodeName.toLowerCase();
 }
 export const idiff = (old, value) => {
     const children = gather(old);
@@ -77,7 +78,8 @@ export const diff = (old, value) => {
         return old;
     }
     if (value) {
-        old?.parentNode?.replaceChild(value, old);
+        if (old && old.parentNode)
+            old.parentNode.replaceChild(value, old);
         collect(old);
         value.__fskip = false;
     }
