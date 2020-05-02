@@ -55,7 +55,7 @@ export function updateChildProps(dom, newProps, parent) {
             }
             else if (!f.__fc && value) {
                 setAccessorSelf(f, value, parent);
-                if (typeof newProps[n] === "object")
+                if (typeof value === "object")
                     updateChildProps(gather(f), value, parent);
             }
         });
@@ -73,8 +73,8 @@ export function updateChildProps(dom, newProps, parent) {
             dom.__fc.setProps(value);
         }
         else if (!dom.__fc && value) {
-            setAccessorSelf(dom, newProps[n], parent);
-            if (typeof newProps[n] === "object")
+            setAccessorSelf(dom, value, parent);
+            if (typeof value === "object")
                 updateChildProps(gather(dom), value, parent);
         }
     }

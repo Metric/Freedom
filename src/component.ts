@@ -63,7 +63,7 @@ export function updateChildProps(dom: Element | Array<Element | Node>, newProps:
                 (<any>f).__fc.setProps(value);
             } else if (!(<any>f).__fc && value) {
                 setAccessorSelf(<Element>f, value, parent);
-                if (typeof newProps[n] === "object") updateChildProps(gather(f), value, parent);
+                if (typeof value === "object") updateChildProps(gather(f), value, parent);
             }
         });
     } else {
@@ -77,8 +77,8 @@ export function updateChildProps(dom: Element | Array<Element | Node>, newProps:
         if ((<any>dom).__fc && value) {
             (<any>dom).__fc.setProps(value);
         } else if (!(<any>dom).__fc && value) {
-            setAccessorSelf(dom, newProps[n], parent);
-            if (typeof newProps[n] === "object") updateChildProps(gather(dom), value, parent);
+            setAccessorSelf(dom, value, parent);
+            if (typeof value === "object") updateChildProps(gather(dom), value, parent);
         }
     }
 }
