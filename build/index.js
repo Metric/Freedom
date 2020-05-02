@@ -1,4 +1,4 @@
-import { createElement, setAccessorSelf } from "./dom";
+import { createElement, setAccessorSelf, getProps } from "./dom";
 import { Component } from "./component";
 export function render(base) {
     let n = null, bc = base;
@@ -14,11 +14,8 @@ export function render(base) {
     if (!bc.__fc) {
         if (window[n])
             new window[n](bc);
-        else
-            setAccessorSelf(base);
-    }
-    else if (!bc.__fskip) {
-        bc.__fc.componentDidUpdate();
+        else if (!bc.__fparent)
+            setAccessorSelf(bc, getProps(bc), null);
     }
     while (stack.length) {
         const c = stack.pop();
@@ -26,11 +23,8 @@ export function render(base) {
         if (!c.__fc) {
             if (window[n])
                 new window[n](c);
-            else
-                setAccessorSelf(c);
-        }
-        else if (!c.__fskip) {
-            c.__fc.componentDidUpdate();
+            else if (!c.__fparent)
+                setAccessorSelf(c, getProps(c), null);
         }
         for (let i = 0; i < c.children.length; ++i) {
             stack.unshift(c.children.item(i));
@@ -40,6 +34,10 @@ export function render(base) {
 const React = {
     createElement: createElement,
     hydrate: render,
+    render: render,
+};
+export const Freedom = {
+    createElement: createElement,
     render: render,
 };
 export default React;

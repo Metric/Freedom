@@ -37,5 +37,10 @@ const React = {
     render: render,
 };
 
+export const Freedom = {
+    createElement: createElement,
+    render: render,
+};
+
 export default React;
 export { Component };

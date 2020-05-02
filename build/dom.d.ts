@@ -132,7 +132,8 @@ export declare const VALID_ATTRIBUTE_LOOKUP: {
     wrap: boolean;
 };
 export declare const setAccessor: (node: any, name: string, old: any, value: any, parent: any) => void;
-export declare const setAccessorSelf: (node: any) => void;
+export declare const getProps: (node: any) => any;
+export declare const setAccessorSelf: (node: any, props: any, parent: any) => void;
 export declare function gather(ele: any): any[];
 export declare function extend(base: any, next: any): any;
 export declare function createElement(name: string, attributes: any, ...children: Array<any>): any;

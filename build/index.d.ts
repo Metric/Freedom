@@ -6,5 +6,9 @@ declare const React: {
     hydrate: typeof render;
     render: typeof render;
 };
+export declare const Freedom: {
+    createElement: typeof createElement;
+    render: typeof render;
+};
 export default React;
 export { Component };
