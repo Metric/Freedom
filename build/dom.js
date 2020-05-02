@@ -288,8 +288,9 @@ export const setAccessorSelf = (node, props, parent) => {
             parent = parent.parentNode;
         }
     }
+    const custom = node.customAttributes || {};
     for (let k in props || {}) {
-        setAccessor(node, k, node.getAttribute(k) || node.customAttributes[k], props[k], parent);
+        setAccessor(node, k, node.getAttribute(k) || custom[k], props[k], parent);
     }
     node.__fparent = parent;
 };
