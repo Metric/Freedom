@@ -1,3 +1,4 @@
+import { Component } from "./index";
 export declare const VALID_ATTRIBUTE_LOOKUP: {
     accept: boolean;
     "accept-charset": boolean;
@@ -131,9 +132,9 @@ export declare const VALID_ATTRIBUTE_LOOKUP: {
     width: boolean;
     wrap: boolean;
 };
-export declare const setAccessor: (node: any, name: string, old: any, value: any, parent: any) => void;
-export declare const getProps: (node: any) => any;
-export declare const setAccessorSelf: (node: any, props: any, parent: any) => void;
-export declare function gather(ele: any): any[];
+export declare const setAccessor: (node: Element, name: string, old: any, value: any, parent: Component) => void;
+export declare const getProps: (node: Element) => any;
+export declare const setAccessorSelf: (node: Element, props: any, parent: Component) => void;
+export declare function gather(ele: Element | Node): Array<Element | Node>;
 export declare function extend(base: any, next: any): any;
-export declare function createElement(name: string, attributes: any, ...children: Array<any>): any;
+export declare function createElement(name: string, attributes: any, ...children: Array<any>): Element;

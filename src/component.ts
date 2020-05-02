@@ -2,20 +2,20 @@ import { setAccessor, gather, extend, setAccessorSelf } from "./dom";
 import { render } from "./index";
 import { idiff } from "./diff";
 
-const NODE_CACHE = new Map<string, Array<any>>();
+const NODE_CACHE = new Map<string, Array<Element | Node>>();
 
-const inNodeCache = (dom: HTMLElement) => {
+const inNodeCache = (dom: Element) => {
     return NODE_CACHE.has(dom.nodeName.toLowerCase());
 };
 
-const assignNodeCache = (dom: HTMLElement) => {
+const assignNodeCache = (dom: Element) => {
     NODE_CACHE.set(dom.nodeName.toLowerCase(), gather(dom));
 };
 
-const cloneNodeCache = (dom: HTMLElement) => {
+const cloneNodeCache = (dom: Element): Array<Element | Node> => {
     if (inNodeCache(dom)) {
         const items = NODE_CACHE.get(dom.nodeName.toLowerCase());
-        const newItems = new Array<any>();
+        const newItems = new Array<Element | Node>();
         items.forEach((c) => {
             const clone = c.cloneNode(true);
             dom.appendChild(clone);
@@ -26,13 +26,13 @@ const cloneNodeCache = (dom: HTMLElement) => {
     return [];
 };
 
-export function getSubComponents(dom: any) {
-    const sub = new Array<any>();
-    const stack = Array.from(dom.childNodes);
+export function getSubComponents(dom: any): Array<Component> {
+    const sub = new Array<Component>();
+    const stack: Array<Element | Node> = Array.from(dom.childNodes);
     while (stack.length) {
-        const c: any = stack.pop();
-        if (c.__fc) {
-            sub.unshift(c.__fc);
+        const c = stack.pop();
+        if ((<any>c).__fc) {
+            sub.unshift((<any>c).__fc);
             continue;
         }
 
@@ -43,23 +43,24 @@ export function getSubComponents(dom: any) {
     return sub;
 }
 
-export function updateChildProps(dom: any, newProps: any, parent: any) {
-    let n = null;
+export function updateChildProps(dom: Element | Array<Element | Node>, newProps: any, parent: any) {
+    let n: string = null;
+    if (!dom) return;
     if (Array.isArray(dom)) {
-        dom.forEach((f) => {
+        dom.forEach((f: Element | Node) => {
             n = f.nodeName.toLowerCase();
-            if (f.__fc && newProps[n]) {
-                f.__fc.setProps(newProps[n]);
-            } else if (!f.__fc && newProps[n]) {
-                setAccessorSelf(f, newProps[n], parent);
+            if ((<any>f).__fc && newProps[n]) {
+                (<any>f).__fc.setProps(newProps[n]);
+            } else if (!(<any>f).__fc && newProps[n]) {
+                setAccessorSelf(<Element>f, newProps[n], parent);
                 if (typeof newProps[n] === "object") updateChildProps(gather(f), newProps[n] || {}, parent);
             }
         });
     } else {
         n = dom.nodeName.toLowerCase();
-        if (dom.__fc && newProps[n]) {
-            dom.__fc.setProps(newProps[n]);
-        } else if (!dom.__fc && newProps[n]) {
+        if ((<any>dom).__fc && newProps[n]) {
+            (<any>dom).__fc.setProps(newProps[n]);
+        } else if (!(<any>dom).__fc && newProps[n]) {
             setAccessorSelf(dom, newProps[n], parent);
             if (typeof newProps[n] === "object") updateChildProps(gather(dom), newProps[n] || {}, parent);
         }
@@ -68,35 +69,35 @@ export function updateChildProps(dom: any, newProps: any, parent: any) {
 
 export class Component {
     parent: Component;
-    dom: any;
-    children: Array<any>;
+    dom: Element;
+    children: Array<Element | Node>;
     props: any;
     state: any;
     _propStateMap: Map<string, string>;
 
-    constructor(dom: HTMLElement, cstate: any) {
+    constructor(dom: Element, cstate: any) {
         this.dom = dom;
         this.state = cstate || {};
         this.props = {};
         this._propStateMap = new Map<string, string>();
         this.children = gather(this.dom);
-        this.dom.__fc = this;
-        if (this.dom.parentNode && this.dom.parentNode.__fc) this.parent = this.dom.parentNode.__fc;
+        (<any>this.dom).__fc = this;
+        if (this.dom.parentNode && (<any>this.dom).parentNode.__fc) this.parent = (<any>this.dom).parentNode.__fc;
         const attrs = Array.from(dom.attributes);
-        const custom = this.dom.customAttributes || {};
+        const custom = (<any>this.dom).customAttributes || {};
         for (let i = 0; i < attrs.length; ++i) {
             const c = attrs[i];
             this.props[c.name] = c.value;
-            if (!this.dom.__fskip) setAccessor(this.dom, c.name, null, c.value, this);
+            if (!(<any>this.dom).__fskip) setAccessor(this.dom, c.name, null, c.value, this);
         }
         for (let k in custom) {
             this.props[k] = custom[k];
-            if (!this.dom.__fskip) setAccessor(this.dom, k, null, custom[k], this);
+            if (!(<any>this.dom).__fskip) setAccessor(this.dom, k, null, custom[k], this);
         }
         if (!this.children.length) {
             this.children = cloneNodeCache(this.dom);
             this._initialRender(false);
-        } else if (!this.dom.__fskip) {
+        } else if (!(<any>this.dom).__fskip) {
             if (!inNodeCache(this.dom)) assignNodeCache(this.dom);
             this.componentDidMount();
         }
@@ -120,18 +121,18 @@ export class Component {
             idiff(this.dom, d);
             render(this.dom);
         }
-        if (!this.dom.__fskip && !skip) this.componentDidMount();
+        if (!(<any>this.dom).__fskip && !skip) this.componentDidMount();
     }
 
     _render() {
         const newChildProps = this.renderProps();
-        let d: any = this.render();
+        let d = this.render();
         if (d == null) {
             this.dom.innerHTML = "";
         } else if (typeof d !== "object") {
             this.dom.textContent = d;
         } else {
-            if (newChildProps) updateChildProps(d, newChildProps, this);
+            if (newChildProps) updateChildProps(<Array<Element | Node>>d, newChildProps, this);
             let c = null;
             if (Array.isArray(d)) {
                 d = Array.from(d);
@@ -141,10 +142,10 @@ export class Component {
                     render(c);
                 }
             } else {
-                d.__fskip = true;
+                (<any>d).__fskip = true;
                 render(d);
             }
-            idiff(this.dom, d);
+            idiff(this.dom, <Element | Node | Array<Element | Node>>d);
             render(this.dom);
         }
         this.componentDidUpdate();
@@ -224,7 +225,7 @@ export class Component {
         return null;
     }
 
-    render(): any {
+    render(): Element | string | Array<Element | Node | string> {
         return this.children;
     }
 }

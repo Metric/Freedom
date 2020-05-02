@@ -1,21 +1,21 @@
 import { createElement, setAccessorSelf, getProps } from "./dom";
 import { Component } from "./component";
 
-export function render(base: HTMLElement) {
+export function render(base: Element) {
     let n: string = null,
-        bc: any = base;
-    const stack = new Array<any>();
+        bc: Element = base;
+    const stack = new Array<Element>();
     if (!bc) return;
     if (bc.children) {
-        for (let i = 0; i < base.children.length; ++i) {
-            stack.unshift(base.children.item(i));
+        for (let i = 0; i < bc.children.length; ++i) {
+            stack.unshift(bc.children.item(i));
         }
     }
 
     n = bc.nodeName.toLowerCase();
-    if (!bc.__fc) {
+    if (!(<any>bc).__fc) {
         if (window[n]) new window[n](bc);
-        else if (!bc.__fparent) setAccessorSelf(bc, getProps(bc), null);
+        else if (!(<any>bc).__fparent) setAccessorSelf(bc, getProps(bc), null);
     }
 
     while (stack.length) {

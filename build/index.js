@@ -6,8 +6,8 @@ export function render(base) {
     if (!bc)
         return;
     if (bc.children) {
-        for (let i = 0; i < base.children.length; ++i) {
-            stack.unshift(base.children.item(i));
+        for (let i = 0; i < bc.children.length; ++i) {
+            stack.unshift(bc.children.item(i));
         }
     }
     n = bc.nodeName.toLowerCase();

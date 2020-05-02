@@ -1,6 +1,6 @@
 import { createElement } from "./dom";
 import { Component } from "./component";
-export declare function render(base: HTMLElement): void;
+export declare function render(base: Element): void;
 declare const React: {
     createElement: typeof createElement;
     hydrate: typeof render;

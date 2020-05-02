@@ -132,6 +132,8 @@ export const VALID_ATTRIBUTE_LOOKUP = {
     wrap: true,
 };
 export const setAccessor = (node, name, old, value, parent) => {
+    if (!node)
+        return;
     if (name === "className")
         name = "class";
     if (name === "__html")
@@ -262,7 +264,7 @@ export const setAccessor = (node, name, old, value, parent) => {
 };
 export const getProps = (node) => {
     const props = {};
-    if (!node.attributes)
+    if (!node || !node.attributes)
         return props;
     const attrs = Array.from(node.attributes);
     for (let i = 0; i < attrs.length; ++i) {
@@ -276,17 +278,19 @@ export const getProps = (node) => {
     return props;
 };
 export const setAccessorSelf = (node, props, parent) => {
-    if (!node.attributes)
+    let p = parent;
+    if (!node || !node.attributes)
         return;
-    if (!parent) {
-        parent = node.parentNode;
-        while (parent) {
-            if (parent.__fc) {
-                parent = parent.__fc;
+    if (!p) {
+        p = node.parentNode;
+        while (p) {
+            if (p.__fc) {
+                p = p.__fc;
                 break;
             }
-            parent = parent.parentNode;
+            p = p.parentNode;
         }
+        parent = p;
     }
     const custom = node.customAttributes || {};
     for (let k in props || {}) {

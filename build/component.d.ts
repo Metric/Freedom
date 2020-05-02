@@ -1,13 +1,13 @@
-export declare function getSubComponents(dom: any): any[];
-export declare function updateChildProps(dom: any, newProps: any, parent: any): void;
+export declare function getSubComponents(dom: any): Array<Component>;
+export declare function updateChildProps(dom: Element | Array<Element | Node>, newProps: any, parent: any): void;
 export declare class Component {
     parent: Component;
-    dom: any;
-    children: Array<any>;
+    dom: Element;
+    children: Array<Element | Node>;
     props: any;
     state: any;
     _propStateMap: Map<string, string>;
-    constructor(dom: HTMLElement, cstate: any);
+    constructor(dom: Element, cstate: any);
     childComponents(): Array<Component>;
     mapPropToState(prop: string, state: string): void;
     _initialRender(skip: boolean): void;
@@ -20,5 +20,5 @@ export declare class Component {
     componentWillUnmount(): void;
     componentDidMount(): void;
     renderProps(): any;
-    render(): any;
+    render(): Element | string | Array<Element | Node | string>;
 }

@@ -1,4 +1,4 @@
-export declare function collect(c: any): void;
-export declare function isSameNodeType(node: any, value: any): boolean;
-export declare const idiff: (old: any, value: any) => any;
-export declare const diff: (old: any, value: any) => any;
+export declare function collect(c: Element | Node): void;
+export declare function isSameNodeType(node: Element | Node, value: any): boolean;
+export declare const idiff: (old: Element | Node, value: Element | Node | (Element | Node)[]) => Element | Node;
+export declare const diff: (old: Element | Node, value: Element | Node) => Element | Node;

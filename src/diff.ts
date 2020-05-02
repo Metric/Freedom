@@ -1,23 +1,23 @@
 import { gather } from "./dom";
 
-export function collect(c: any) {
+export function collect(c: Element | Node) {
     const stack = gather(c);
     while (stack.length) {
-        const nc: any = stack.pop();
+        const nc: Element | Node = stack.pop();
         const children = gather(nc);
         children.forEach((c) => stack.unshift(c));
-        if (nc && nc.__fc && !nc.__fskip) nc.__fc.componentWillUnmount();
+        if (nc && (<any>nc).__fc && !(<any>nc).__fskip) (<any>nc).__fc.componentWillUnmount();
     }
-    if (c && c.__fc && !c.__fskip) c.__fc.componentWillUnmount();
+    if (c && (<any>c).__fc && !(<any>c).__fskip) (<any>c).__fc.componentWillUnmount();
     if (c && c.parentNode) c.parentNode.removeChild(c);
 }
 
-export function isSameNodeType(node: any, value: any) {
+export function isSameNodeType(node: Element | Node, value: any) {
     if (!node || !value) return false;
     return node.nodeName.toLowerCase() === value.nodeName.toLowerCase();
 }
 
-export const idiff = (old: any, value: any) => {
+export const idiff = (old: Element | Node, value: Element | Node | Array<Element | Node>) => {
     const children = gather(old);
     if (Array.isArray(value)) {
         if (children.length === value.length) {
@@ -44,7 +44,7 @@ export const idiff = (old: any, value: any) => {
     return old;
 };
 
-export const diff = (old: any, value: any) => {
+export const diff = (old: Element | Node, value: Element | Node) => {
     if (isSameNodeType(old, value)) {
         if (old.nodeName.toLowerCase() === "#text" || old.nodeName.toLowerCase() === "#comment") {
             if (old.nodeValue !== value.nodeValue) old.nodeValue = value.nodeValue;
@@ -52,13 +52,13 @@ export const diff = (old: any, value: any) => {
         }
 
         const attrs = {};
-        for (let i = 0; i < value.attributes.length; ++i) {
-            const attr = value.attributes[i];
+        for (let i = 0; i < (<Element>value).attributes.length; ++i) {
+            const attr = (<Element>value).attributes[i];
             attrs[attr.name] = attr.value;
-            if (attr.name[0] !== "o" && attr.name[1] !== "n") old.setAttribute(attr.name, attr.value);
+            if (attr.name[0] !== "o" && attr.name[1] !== "n") (<Element>old).setAttribute(attr.name, attr.value);
         }
-        for (let k in value.customAttributes || {}) attrs[k] = value.customAttributes[k];
-        if (old.__fc) old.__fc.setProps(attrs);
+        for (let k in (<any>value).customAttributes || {}) attrs[k] = (<any>value).customAttributes[k];
+        if ((<any>old).__fc) (<any>old).__fc.setProps(attrs);
 
         idiff(old, gather(value));
 

@@ -1,3 +1,5 @@
+import { Component } from "./index";
+
 export const VALID_ATTRIBUTE_LOOKUP = {
     accept: true,
     "accept-charset": true,
@@ -132,7 +134,8 @@ export const VALID_ATTRIBUTE_LOOKUP = {
     wrap: true,
 };
 
-export const setAccessor = (node: any, name: string, old: any, value: any, parent: any) => {
+export const setAccessor = (node: Element, name: string, old: any, value: any, parent: Component) => {
+    if (!node) return;
     if (name === "className") name = "class";
     if (name === "__html") name = "html";
     else if (name === "ref") {
@@ -164,12 +167,12 @@ export const setAccessor = (node: any, name: string, old: any, value: any, paren
         if (value && typeof value === "object") {
             if (typeof old === "object") {
                 for (let i in old) {
-                    if (!(i in value)) node.style[i] = "";
+                    if (!(i in value)) (<HTMLElement>node).style[i] = "";
                 }
-            } else node.style.cssText = "";
-            for (let i in value) node.style[i] = value[i] || "";
+            } else (<HTMLElement>node).style.cssText = "";
+            for (let i in value) (<HTMLElement>node).style[i] = value[i] || "";
         } else if (!value || typeof value === "string" || typeof old === "string") {
-            node.style.cssText = value || "";
+            (<HTMLElement>node).style.cssText = value || "";
         }
     } else if (name[0] === "o" && name[1] === "n") {
         let f, p, s, spl;
@@ -220,7 +223,7 @@ export const setAccessor = (node: any, name: string, old: any, value: any, paren
             if ((value == null || value === false) && name !== "spellcheck") node.removeAttribute(name);
         }
     } else {
-        const custom = node.customAttributes || {};
+        const custom = (<any>node).customAttributes || {};
         if (value == null || value === false) {
             node.removeAttribute(name);
             custom[name] = null;
@@ -229,47 +232,49 @@ export const setAccessor = (node: any, name: string, old: any, value: any, paren
             node.removeAttribute(name);
             custom[name] = value;
         }
-        node.customAttributes = custom;
+        (<any>node).customAttributes = custom;
     }
 };
 
-export const getProps = (node: any): any => {
+export const getProps = (node: Element): any => {
     const props: any = {};
-    if (!node.attributes) return props;
+    if (!node || !node.attributes) return props;
     const attrs = Array.from(node.attributes);
     for (let i = 0; i < attrs.length; ++i) {
         const attr: any = attrs[i];
         props[attr.name] = attr.value;
     }
-    const custom = node.customAttributes || {};
+    const custom = (<any>node).customAttributes || {};
     for (let k in custom) {
         props[k] = custom[k];
     }
     return props;
 };
 
-export const setAccessorSelf = (node: any, props: any, parent: any) => {
-    if (!node.attributes) return;
-    if (!parent) {
-        parent = node.parentNode;
-        while (parent) {
-            if (parent.__fc) {
-                parent = parent.__fc;
+export const setAccessorSelf = (node: Element, props: any, parent: Component) => {
+    let p: any = parent;
+    if (!node || !node.attributes) return;
+    if (!p) {
+        p = node.parentNode;
+        while (p) {
+            if (p.__fc) {
+                p = p.__fc;
                 break;
             }
-            parent = parent.parentNode;
+            p = p.parentNode;
         }
+        parent = p;
     }
-    const custom = node.customAttributes || {};
+    const custom = (<any>node).customAttributes || {};
     for (let k in props || {}) {
         setAccessor(node, k, node.getAttribute(k) || custom[k], props[k], parent);
     }
-    node.__fparent = parent;
+    (<any>node).__fparent = parent;
 };
 
-export function gather(ele: any) {
+export function gather(ele: Element | Node): Array<Element | Node> {
     if (!ele) return [];
-    const list: Array<any> = new Array<any>();
+    const list: Array<Element | Node> = new Array<Element | Node>();
     for (let i = ele.childNodes.length - 1; i >= 0; --i) {
         const c = ele.childNodes[i];
         if (c) list.unshift(c);
@@ -286,18 +291,18 @@ export function extend(base: any, next: any) {
     return base;
 }
 
-export function createElement(name: string, attributes: any, ...children: Array<any>) {
+export function createElement(name: string, attributes: any, ...children: Array<any>): Element {
     attributes = attributes || {};
     const stack = new Array<any>();
     let child,
-        p: any = document.createElement(name);
+        p: Element = document.createElement(name);
     children.forEach((c) => stack.unshift(c));
-    const custom = p.customAttributes || {};
+    const custom = (<any>p).customAttributes || {};
     for (let k in attributes) {
         if (VALID_ATTRIBUTE_LOOKUP[k.toLowerCase()] && typeof attributes[k] !== "function") p.setAttribute(k, attributes[k].toString());
         else custom[k] = attributes[k];
     }
-    p.customAttributes = custom;
+    (<any>p).customAttributes = custom;
     while (stack.length) {
         child = stack.pop();
         if (Array.isArray(child)) child.forEach((c) => stack.unshift(c));

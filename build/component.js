@@ -38,6 +38,8 @@ export function getSubComponents(dom) {
 }
 export function updateChildProps(dom, newProps, parent) {
     let n = null;
+    if (!dom)
+        return;
     if (Array.isArray(dom)) {
         dom.forEach((f) => {
             n = f.nodeName.toLowerCase();
