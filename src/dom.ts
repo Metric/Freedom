@@ -133,8 +133,7 @@ export const VALID_ATTRIBUTE_LOOKUP = {
 };
 
 export const setAccessor = (node: any, name: string, old: any, value: any, parent: any) => {
-    name = name ? name.toLowerCase() : name;
-    if (name === "classname") name = "class";
+    if (name === "className") name = "class";
     if (name === "__html") name = "html";
     else if (name === "ref") {
         if (old) old(null);
@@ -221,8 +220,10 @@ export const setAccessor = (node: any, name: string, old: any, value: any, paren
         }
     } else {
         const custom = node.customAttributes || {};
-        if (value == null || value === false) node.removeAttribute(name);
-        else if (typeof value !== "function" && VALID_ATTRIBUTE_LOOKUP[name]) node.setAttribute(name, value);
+        if (value == null || value === false) {
+            node.removeAttribute(name);
+            custom[name] = null;
+        } else if (typeof value !== "function" && VALID_ATTRIBUTE_LOOKUP[name]) node.setAttribute(name, value);
         else {
             node.removeAttribute(name);
             custom[name] = value;
@@ -280,7 +281,7 @@ export function createElement(name: string, attributes: any, ...children: Array<
     const custom = p.customAttributes || {};
     for (let k in attributes) {
         if (VALID_ATTRIBUTE_LOOKUP[k.toLowerCase()] && typeof attributes[k] !== "function") p.setAttribute(k, attributes[k].toString());
-        else custom[k.toLowerCase()] = attributes[k];
+        else custom[k] = attributes[k];
     }
     p.customAttributes = custom;
     while (stack.length) {

@@ -132,8 +132,7 @@ export const VALID_ATTRIBUTE_LOOKUP = {
     wrap: true,
 };
 export const setAccessor = (node, name, old, value, parent) => {
-    name = name ? name.toLowerCase() : name;
-    if (name === "classname")
+    if (name === "className")
         name = "class";
     if (name === "__html")
         name = "html";
@@ -244,8 +243,10 @@ export const setAccessor = (node, name, old, value, parent) => {
     }
     else {
         const custom = node.customAttributes || {};
-        if (value == null || value === false)
+        if (value == null || value === false) {
             node.removeAttribute(name);
+            custom[name] = null;
+        }
         else if (typeof value !== "function" && VALID_ATTRIBUTE_LOOKUP[name])
             node.setAttribute(name, value);
         else {
@@ -305,7 +306,7 @@ export function createElement(name, attributes, ...children) {
         if (VALID_ATTRIBUTE_LOOKUP[k.toLowerCase()] && typeof attributes[k] !== "function")
             p.setAttribute(k, attributes[k].toString());
         else
-            custom[k.toLowerCase()] = attributes[k];
+            custom[k] = attributes[k];
     }
     p.customAttributes = custom;
     while (stack.length) {
