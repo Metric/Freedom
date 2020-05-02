@@ -1,6 +1,26 @@
 import { setAccessor, gather, extend, setAccessorSelf } from "./dom";
 import { render } from "./index";
 import { idiff } from "./diff";
+const NODE_CACHE = new Map();
+const inNodeCache = (dom) => {
+    return NODE_CACHE.has(dom.nodeName.toLowerCase());
+};
+const assignNodeCache = (dom) => {
+    NODE_CACHE.set(dom.nodeName.toLowerCase(), gather(dom));
+};
+const cloneNodeCache = (dom) => {
+    if (inNodeCache(dom)) {
+        const items = NODE_CACHE.get(dom.nodeName.toLowerCase());
+        const newItems = new Array();
+        items.forEach((c) => {
+            const clone = c.cloneNode(true);
+            dom.appendChild(clone);
+            newItems.push(clone);
+        });
+        return newItems;
+    }
+    return [];
+};
 export function getSubComponents(dom) {
     const sub = new Array();
     const stack = Array.from(dom.childNodes);
@@ -66,10 +86,15 @@ export class Component {
             if (!this.dom.__fskip)
                 setAccessor(this.dom, k, null, custom[k], this);
         }
-        if (!this.children.length)
+        if (!this.children.length) {
+            this.children = cloneNodeCache(this.dom);
             this._initialRender(false);
-        else if (!this.dom.__fskip)
+        }
+        else if (!this.dom.__fskip) {
+            if (!inNodeCache(this.dom))
+                assignNodeCache(this.dom);
             this.componentDidMount();
+        }
     }
     childComponents() {
         if (!this.dom)
