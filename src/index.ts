@@ -14,7 +14,7 @@ export function render(base: Element) {
 
     n = bc.nodeName.toLowerCase();
     if (!(<any>bc).__fc) {
-        if (window[n]) new window[n](bc);
+        if (globalThis[n]) new globalThis[n](bc);
         else if (!(<any>bc).__fparent) setAccessorSelf(bc, getProps(bc), null);
     }
 
@@ -22,7 +22,7 @@ export function render(base: Element) {
         const c: any = stack.pop();
         n = c.nodeName.toLowerCase();
         if (!c.__fc) {
-            if (window[n]) new window[n](c);
+            if (globalThis[n]) new globalThis[n](c);
             else if (!c.__fparent) setAccessorSelf(c, getProps(c), null);
         }
         for (let i = 0; i < c.children.length; ++i) {

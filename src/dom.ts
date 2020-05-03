@@ -187,7 +187,7 @@ export const setAccessor = (node: Element, name: string, old: any, value: any, p
                     s = spl.shift();
                     f = f[s];
                 }
-                if (!f) return;
+                if (!f || typeof f !== "function") return;
                 node.removeEventListener(name, f, useCapture);
             } else node.removeEventListener(name, old, useCapture);
             node.removeAttribute("on" + name);
@@ -203,7 +203,7 @@ export const setAccessor = (node: Element, name: string, old: any, value: any, p
                     s = spl.shift();
                     f = f[s];
                 }
-                if (!f) {
+                if (!f || typeof f !== "function") {
                     console.warn(`Component: ${p.constructor.name} missing event handler for ${name} with name ${value}`);
                     return;
                 }
@@ -229,7 +229,33 @@ export const setAccessor = (node: Element, name: string, old: any, value: any, p
             custom[name] = null;
         } else if (typeof value !== "function" && VALID_ATTRIBUTE_LOOKUP[name]) node.setAttribute(name, value);
         else {
+            let f: any = parent,
+                p,
+                s,
+                spl;
             node.removeAttribute(name);
+            if (typeof value === "function" && f) {
+                if (f[value.name] && !value.bound) {
+                    s = value.name;
+                    value = value.bind(f);
+                    value.bound = true;
+                    f[s] = value;
+                }
+            } else if (typeof value === "string" && f) {
+                spl = value.split(".");
+                p = f;
+                while (spl.length && f) {
+                    p = f;
+                    s = spl.shift();
+                    f = f[s];
+                }
+                if (typeof f === "function" && !f.bound) {
+                    f = f.bind(p);
+                    f.bound = true;
+                    p[s] = f;
+                    value = f;
+                }
+            }
             custom[name] = value;
         }
         (<any>node).customAttributes = custom;

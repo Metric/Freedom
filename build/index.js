@@ -12,8 +12,8 @@ export function render(base) {
     }
     n = bc.nodeName.toLowerCase();
     if (!bc.__fc) {
-        if (window[n])
-            new window[n](bc);
+        if (globalThis[n])
+            new globalThis[n](bc);
         else if (!bc.__fparent)
             setAccessorSelf(bc, getProps(bc), null);
     }
@@ -21,8 +21,8 @@ export function render(base) {
         const c = stack.pop();
         n = c.nodeName.toLowerCase();
         if (!c.__fc) {
-            if (window[n])
-                new window[n](c);
+            if (globalThis[n])
+                new globalThis[n](c);
             else if (!c.__fparent)
                 setAccessorSelf(c, getProps(c), null);
         }
