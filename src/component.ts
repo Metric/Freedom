@@ -112,10 +112,10 @@ export class Component {
         }
         if (!this.children.length) {
             this.children = cloneNodeCache(this.dom);
-            this._initialRender(false);
+            requestAnimationFrame(() => this._initialRender(false));
         } else if (!(<any>this.dom).__fskip) {
             if (!inNodeCache(this.dom)) assignNodeCache(this.dom);
-            this.componentDidMount();
+            requestAnimationFrame(() => this._initialRender(false));
         }
     }
 
@@ -129,10 +129,12 @@ export class Component {
     }
 
     _initialRender(skip: boolean) {
+        const newChildProps = this.renderProps();
         let d: any = this.render();
         if (d == null) this.dom.innerHTML = "";
         else if (typeof d !== "object") this.dom.textContent = d;
         else {
+            if (newChildProps) updateChildProps(<Array<Element | Node>>d, newChildProps, this);
             if (Array.isArray(d)) d = Array.from(d);
             idiff(this.dom, d);
             render(this.dom);

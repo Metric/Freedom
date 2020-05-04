@@ -104,12 +104,12 @@ export class Component {
         }
         if (!this.children.length) {
             this.children = cloneNodeCache(this.dom);
-            this._initialRender(false);
+            requestAnimationFrame(() => this._initialRender(false));
         }
         else if (!this.dom.__fskip) {
             if (!inNodeCache(this.dom))
                 assignNodeCache(this.dom);
-            this.componentDidMount();
+            requestAnimationFrame(() => this._initialRender(false));
         }
     }
     childComponents() {
@@ -121,12 +121,15 @@ export class Component {
         this._propStateMap.set(prop, state);
     }
     _initialRender(skip) {
+        const newChildProps = this.renderProps();
         let d = this.render();
         if (d == null)
             this.dom.innerHTML = "";
         else if (typeof d !== "object")
             this.dom.textContent = d;
         else {
+            if (newChildProps)
+                updateChildProps(d, newChildProps, this);
             if (Array.isArray(d))
                 d = Array.from(d);
             idiff(this.dom, d);
