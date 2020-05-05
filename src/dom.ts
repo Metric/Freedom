@@ -286,7 +286,7 @@ export function gather(ele: Element | Node): Array<Element | Node> {
     const list: Array<Element | Node> = new Array<Element | Node>();
     for (let i = ele.childNodes.length - 1; i >= 0; --i) {
         const c = ele.childNodes[i];
-        if (c) list.unshift(c);
+        if (c) list.push(c);
     }
     return list;
 }

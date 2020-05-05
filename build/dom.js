@@ -302,7 +302,7 @@ export function gather(ele) {
     for (let i = ele.childNodes.length - 1; i >= 0; --i) {
         const c = ele.childNodes[i];
         if (c)
-            list.unshift(c);
+            list.push(c);
     }
     return list;
 }
