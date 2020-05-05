@@ -223,9 +223,10 @@ export const setAccessor = (node, name, old, value, parent) => {
         if (node[k]) {
             node.removeEventListener(name, node[k], useCapture);
             node.removeAttribute("on" + name);
+            node[k] = null;
         }
-        if (value) {
-            f = bindToParent(value, parent);
+        if (value && p) {
+            f = bindToParent(value, p);
             if (!f || typeof f !== "function") {
                 console.warn(`Component: ${p.constructor.name} missing event handler for ${name} with name ${value}`);
                 return;
