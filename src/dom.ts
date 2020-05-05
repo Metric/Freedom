@@ -317,8 +317,9 @@ export function extend(base: any, next: any) {
     return base;
 }
 
-export function createElement(name: string, attributes: any, ...children: Array<any>): Element {
+export function createElement(name: string, attributes: any, ...children: Array<any>): Element | Array<Element> {
     attributes = attributes || {};
+    if (!name) return children;
     const stack = new Array<any>();
     let child,
         p: Element = document.createElement(name);

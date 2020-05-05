@@ -343,6 +343,8 @@ export function extend(base, next) {
 }
 export function createElement(name, attributes, ...children) {
     attributes = attributes || {};
+    if (!name)
+        return children;
     const stack = new Array();
     let child, p = document.createElement(name);
     children.forEach((c) => stack.unshift(c));
