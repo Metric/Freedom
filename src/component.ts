@@ -112,10 +112,10 @@ export class Component {
         }
         if (!this.children.length) {
             this.children = cloneNodeCache(this.dom);
-            requestAnimationFrame(() => this._initialRender(false));
-        } else if (!(<any>this.dom).__fskip) {
+            this._initialRender(false);
+        } else {
             if (!inNodeCache(this.dom)) assignNodeCache(this.dom);
-            requestAnimationFrame(() => this._initialRender(false));
+            this._initialRender(false);
         }
     }
 
