@@ -286,12 +286,16 @@ export function gather(ele: Element | Node): Array<Element | Node> {
     const list: Array<Element | Node> = new Array<Element | Node>();
     for (let i = 0; i < ele.childNodes.length; ++i) {
         const c = ele.childNodes[i];
-        if (
-            (ele.nodeName.toLowerCase() === "#text" && !ele.nodeValue.replace(/(\r\n)+|\r+|\n+|\t+|\s+/gim, "").length) ||
-            ele.nodeName.toLowerCase() === "#comment"
-        )
-            continue;
-        if (c) list.push(c);
+        if (c) {
+            if (
+                (c.nodeName.toLowerCase() === "#text" && !c.nodeValue.replace(/(\r\n)+|\r+|\n+|\t+|\s+/gim, "").length) ||
+                c.nodeName.toLowerCase() === "#comment"
+            ) {
+                continue;
+            }
+
+            list.push(c);
+        }
     }
     return list;
 }
