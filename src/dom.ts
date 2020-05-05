@@ -158,8 +158,8 @@ export const bindToParent = (value: any, parent: Component) => {
             f = f.bind(p);
             f.bound = 1;
             p[s] = f;
-            value = f;
         }
+        value = f;
     }
     return value;
 };
