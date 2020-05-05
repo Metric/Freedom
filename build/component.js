@@ -106,7 +106,7 @@ export class Component {
             this.children = cloneNodeCache(this.dom);
             this._initialRender(false);
         }
-        else if (!this.dom.__fskip) {
+        else {
             if (!inNodeCache(this.dom))
                 assignNodeCache(this.dom);
             this._initialRender(false);
