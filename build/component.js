@@ -6,7 +6,11 @@ const inNodeCache = (dom) => {
     return NODE_CACHE.has(dom.nodeName.toLowerCase());
 };
 const assignNodeCache = (dom) => {
-    NODE_CACHE.set(dom.nodeName.toLowerCase(), gather(dom).map((c) => c.cloneNode(true)));
+    NODE_CACHE.set(dom.nodeName.toLowerCase(), gather(dom).map((c) => {
+        const nc = c.cloneNode(true);
+        nc.customAttributes = extend({}, c.customAttributes || {});
+        return nc;
+    }));
 };
 const cloneNodeCache = (dom) => {
     if (inNodeCache(dom)) {
@@ -14,6 +18,7 @@ const cloneNodeCache = (dom) => {
         const newItems = new Array();
         items.forEach((c) => {
             const clone = c.cloneNode(true);
+            clone.customAttributes = extend({}, c.customAttributes || {});
             dom.appendChild(clone);
             newItems.push(clone);
         });

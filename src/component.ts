@@ -11,7 +11,11 @@ const inNodeCache = (dom: Element) => {
 const assignNodeCache = (dom: Element) => {
     NODE_CACHE.set(
         dom.nodeName.toLowerCase(),
-        gather(dom).map((c) => c.cloneNode(true))
+        gather(dom).map((c) => {
+            const nc = c.cloneNode(true);
+            (<any>nc).customAttributes = extend({}, (<any>c).customAttributes || {});
+            return nc;
+        })
     );
 };
 
@@ -21,6 +25,7 @@ const cloneNodeCache = (dom: Element): Array<Element | Node> => {
         const newItems = new Array<Element | Node>();
         items.forEach((c) => {
             const clone = c.cloneNode(true);
+            (<any>clone).customAttributes = extend({}, (<any>c).customAttributes || {});
             dom.appendChild(clone);
             newItems.push(clone);
         });
