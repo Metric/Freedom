@@ -130,8 +130,17 @@ export class Component {
         else {
             if (newChildProps)
                 updateChildProps(d, newChildProps, this);
-            if (Array.isArray(d))
+            if (Array.isArray(d)) {
                 d = Array.from(d);
+                for (let i = 0; i < d.length; ++i) {
+                    d[i].__fskip = this.dom.__fskip;
+                    render(d[i]);
+                }
+            }
+            else {
+                d.__fskip = this.dom.__fskip;
+                render(d);
+            }
             idiff(this.dom, d);
             render(this.dom);
         }

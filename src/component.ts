@@ -135,7 +135,16 @@ export class Component {
         else if (typeof d !== "object") this.dom.textContent = d;
         else {
             if (newChildProps) updateChildProps(<Array<Element | Node>>d, newChildProps, this);
-            if (Array.isArray(d)) d = Array.from(d);
+            if (Array.isArray(d)) {
+                d = Array.from(d);
+                for (let i = 0; i < d.length; ++i) {
+                    d[i].__fskip = (<any>this.dom).__fskip;
+                    render(d[i]);
+                }
+            } else {
+                d.__fskip = (<any>this.dom).__fskip;
+                render(d);
+            }
             idiff(this.dom, d);
             render(this.dom);
         }
