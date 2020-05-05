@@ -287,7 +287,7 @@ export function gather(ele: Element | Node): Array<Element | Node> {
     for (let i = 0; i < ele.childNodes.length; ++i) {
         const c = ele.childNodes[i];
         if (
-            (ele.nodeName.toLowerCase() === "#text" && !ele.nodeValue.replace(/\r|\n|\t|\s/gi, "").length) ||
+            (ele.nodeName.toLowerCase() === "#text" && !ele.nodeValue.replace(/(\r\n)+|\r+|\n+|\t+|\s+/gim, "").length) ||
             ele.nodeName.toLowerCase() === "#comment"
         )
             continue;
