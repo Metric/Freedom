@@ -286,6 +286,11 @@ export function gather(ele: Element | Node): Array<Element | Node> {
     const list: Array<Element | Node> = new Array<Element | Node>();
     for (let i = 0; i < ele.childNodes.length; ++i) {
         const c = ele.childNodes[i];
+        if (
+            (ele.nodeName.toLowerCase() === "#text" && !ele.nodeValue.replace(/\r|\n|\t|\s/gi, "").length) ||
+            ele.nodeName.toLowerCase() === "#comment"
+        )
+            continue;
         if (c) list.push(c);
     }
     return list;
