@@ -14,7 +14,7 @@ export function render(base) {
     if (!bc.__fc) {
         if (globalThis[n])
             new globalThis[n](bc);
-        else
+        else if (!bc.__fparent)
             setAccessorSelf(bc, getProps(bc), bc.__fparent);
     }
     while (stack.length) {
@@ -23,7 +23,7 @@ export function render(base) {
         if (!c.__fc) {
             if (globalThis[n])
                 new globalThis[n](c);
-            else
+            else if (!c.__fparent)
                 setAccessorSelf(c, getProps(c), c.__fparent);
         }
         for (let i = 0; i < c.children.length; ++i) {
