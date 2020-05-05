@@ -108,6 +108,7 @@ export class Component {
         if (!inNodeCache(this.dom)) assignNodeCache(this.dom);
         (<any>this.dom).__fc = this;
         if (this.dom.parentNode && (<any>this.dom).parentNode.__fc) this.parent = (<any>this.dom).parentNode.__fc;
+        else if (this.dom.parentNode && (<any>this.dom).parentNode.__fparent) this.parent = (<any>this.dom).parentNode.__fparent;
         const attrs = Array.from(dom.attributes);
         const custom = (<any>this.dom).customAttributes || {};
         for (let i = 0; i < attrs.length; ++i) {

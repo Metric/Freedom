@@ -96,6 +96,8 @@ export class Component {
         this.dom.__fc = this;
         if (this.dom.parentNode && this.dom.parentNode.__fc)
             this.parent = this.dom.parentNode.__fc;
+        else if (this.dom.parentNode && this.dom.parentNode.__fparent)
+            this.parent = this.dom.parentNode.__fparent;
         const attrs = Array.from(dom.attributes);
         const custom = this.dom.customAttributes || {};
         for (let i = 0; i < attrs.length; ++i) {
