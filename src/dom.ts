@@ -284,7 +284,7 @@ export const setAccessorSelf = (node: Element, props: any, parent: Component) =>
 export function gather(ele: Element | Node): Array<Element | Node> {
     if (!ele) return [];
     const list: Array<Element | Node> = new Array<Element | Node>();
-    for (let i = ele.childNodes.length - 1; i >= 0; --i) {
+    for (let i = 0; i < ele.childNodes.length; ++i) {
         const c = ele.childNodes[i];
         if (c) list.push(c);
     }
