@@ -33,7 +33,7 @@ export const idiff = (old, value) => {
         }
         else if (children.length > value.length) {
             while (children.length > value.length)
-                collect(children.shift());
+                collect(children.pop());
             while (children.length && value.length)
                 diff(children.shift(), value.shift());
         }
@@ -41,7 +41,7 @@ export const idiff = (old, value) => {
     }
     if (children.length > 1 && value) {
         while (children.length > 1)
-            collect(children.shift());
+            collect(children.pop());
         diff(children[0], value);
     }
     else if (children.length && !value) {

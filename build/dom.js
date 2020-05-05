@@ -299,7 +299,7 @@ export function gather(ele) {
     if (!ele)
         return [];
     const list = new Array();
-    for (let i = ele.childNodes.length - 1; i >= 0; --i) {
+    for (let i = 0; i < ele.childNodes.length; ++i) {
         const c = ele.childNodes[i];
         if (c)
             list.push(c);
