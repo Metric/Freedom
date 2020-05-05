@@ -120,6 +120,11 @@ export class Component {
     mapPropToState(prop, state) {
         this._propStateMap.set(prop, state);
     }
+    _initialProps() {
+        for (let k in this.props) {
+            setAccessor(this.dom, k, null, this.props[k], this);
+        }
+    }
     _initialRender(skip) {
         const newChildProps = this.renderProps();
         let d = this.render();

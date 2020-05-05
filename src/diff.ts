@@ -1,15 +1,23 @@
-import { gather } from "./dom";
+import { gather, setAccessorSelf } from "./dom";
 
-export function collect(c: Element | Node) {
+export function collect(c: Element | Node, remove: boolean = true) {
     const stack = gather(c);
     while (stack.length) {
         const nc: Element | Node = stack.pop();
         const children = gather(nc);
         children.forEach((c) => stack.unshift(c));
-        if (nc && (<any>nc).__fc && !(<any>nc).__fskip) (<any>nc).__fc.componentWillUnmount();
+        if (nc && (<any>nc).__fc) {
+            (<any>nc).__fc.componentWillUnmount();
+            (<any>nc).__fc = null;
+            (<any>nc).__fskip = false;
+        }
     }
-    if (c && (<any>c).__fc && !(<any>c).__fskip) (<any>c).__fc.componentWillUnmount();
-    if (c && c.parentNode) c.parentNode.removeChild(c);
+    if (c && (<any>c).__fc) {
+        (<any>c).__fc.componentWillUnmount();
+        (<any>c).__fc = null;
+        (<any>c).__fskip = false;
+    }
+    if (c && c.parentNode && remove) c.parentNode.removeChild(c);
 }
 
 export function isSameNodeType(node: Element | Node, value: any) {
@@ -45,30 +53,46 @@ export const idiff = (old: Element | Node, value: Element | Node | Array<Element
 };
 
 export const diff = (old: Element | Node, value: Element | Node) => {
-    if (isSameNodeType(old, value)) {
-        if (old.nodeName.toLowerCase() === "#text" || old.nodeName.toLowerCase() === "#comment") {
-            if (old.nodeValue !== value.nodeValue) old.nodeValue = value.nodeValue;
-            return old;
+    let r: number = 0,
+        c: any = old,
+        v: any = value;
+    if (isSameNodeType(c, v)) {
+        if (c.nodeName.toLowerCase() === "#text" || c.nodeName.toLowerCase() === "#comment") {
+            if (c.nodeValue !== v.nodeValue) c.nodeValue = v.nodeValue;
+            return c;
         }
 
         const attrs = {};
-        for (let i = 0; i < (<Element>value).attributes.length; ++i) {
-            const attr = (<Element>value).attributes[i];
+        for (let i = 0; i < v.attributes.length; ++i) {
+            const attr = v.attributes[i];
             attrs[attr.name] = attr.value;
-            if (attr.name[0] !== "o" && attr.name[1] !== "n") (<Element>old).setAttribute(attr.name, attr.value);
         }
-        for (let k in (<any>value).customAttributes || {}) attrs[k] = (<any>value).customAttributes[k];
-        if ((<any>old).__fc) (<any>old).__fc.setProps(attrs);
+        for (let k in v.customAttributes || {}) attrs[k] = v.customAttributes[k];
+        if (!c.__fc && !v.__fc) {
+            setAccessorSelf(c, attrs, c.__fparent);
+        } else if (!c.__fc && v.__fc) {
+            c.__fc = v.__fc;
+            c.__fparent = null;
+            r = 1;
+        } else if (c.__fc && v.__fc) c.__fc.setProps(attrs);
+        else {
+            collect(c, false);
+            setAccessorSelf(c, attrs, c.__fparent);
+        }
 
-        idiff(old, gather(value));
+        idiff(c, gather(v));
+        if (r) {
+            c.__fc.dom = c;
+            c.__fc._initialProps();
+        }
 
-        return old;
+        return c;
     }
 
-    if (value) {
-        if (old && old.parentNode) old.parentNode.replaceChild(value, old);
-        collect(old);
-    } else collect(old);
+    if (v) {
+        if (c && c.parentNode) c.parentNode.replaceChild(v, c);
+        collect(c);
+    } else collect(c);
 
-    return value;
+    return v;
 };

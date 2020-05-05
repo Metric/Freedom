@@ -128,6 +128,12 @@ export class Component {
         this._propStateMap.set(prop, state);
     }
 
+    _initialProps() {
+        for (let k in this.props) {
+            setAccessor(this.dom, k, null, this.props[k], this);
+        }
+    }
+
     _initialRender(skip: boolean) {
         const newChildProps = this.renderProps();
         let d: any = this.render();

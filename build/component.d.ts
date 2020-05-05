@@ -10,6 +10,7 @@ export declare class Component {
     constructor(dom: Element, cstate: any);
     childComponents(): Array<Component>;
     mapPropToState(prop: string, state: string): void;
+    _initialProps(): void;
     _initialRender(skip: boolean): void;
     _render(): void;
     onStateChanged(oldState: any, newState: any): void;

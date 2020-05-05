@@ -1,16 +1,22 @@
-import { gather } from "./dom";
-export function collect(c) {
+import { gather, setAccessorSelf } from "./dom";
+export function collect(c, remove = true) {
     const stack = gather(c);
     while (stack.length) {
         const nc = stack.pop();
         const children = gather(nc);
         children.forEach((c) => stack.unshift(c));
-        if (nc && nc.__fc && !nc.__fskip)
+        if (nc && nc.__fc) {
             nc.__fc.componentWillUnmount();
+            nc.__fc = null;
+            nc.__fskip = false;
+        }
     }
-    if (c && c.__fc && !c.__fskip)
+    if (c && c.__fc) {
         c.__fc.componentWillUnmount();
-    if (c && c.parentNode)
+        c.__fc = null;
+        c.__fskip = false;
+    }
+    if (c && c.parentNode && remove)
         c.parentNode.removeChild(c);
 }
 export function isSameNodeType(node, value) {
@@ -57,33 +63,48 @@ export const idiff = (old, value) => {
     return old;
 };
 export const diff = (old, value) => {
-    if (isSameNodeType(old, value)) {
-        if (old.nodeName.toLowerCase() === "#text" || old.nodeName.toLowerCase() === "#comment") {
-            if (old.nodeValue !== value.nodeValue)
-                old.nodeValue = value.nodeValue;
-            return old;
+    let r = 0, c = old, v = value;
+    if (isSameNodeType(c, v)) {
+        if (c.nodeName.toLowerCase() === "#text" || c.nodeName.toLowerCase() === "#comment") {
+            if (c.nodeValue !== v.nodeValue)
+                c.nodeValue = v.nodeValue;
+            return c;
         }
         const attrs = {};
-        for (let i = 0; i < value.attributes.length; ++i) {
-            const attr = value.attributes[i];
+        for (let i = 0; i < v.attributes.length; ++i) {
+            const attr = v.attributes[i];
             attrs[attr.name] = attr.value;
-            if (attr.name[0] !== "o" && attr.name[1] !== "n")
-                old.setAttribute(attr.name, attr.value);
         }
-        for (let k in value.customAttributes || {})
-            attrs[k] = value.customAttributes[k];
-        if (old.__fc)
-            old.__fc.setProps(attrs);
-        idiff(old, gather(value));
-        return old;
+        for (let k in v.customAttributes || {})
+            attrs[k] = v.customAttributes[k];
+        if (!c.__fc && !v.__fc) {
+            setAccessorSelf(c, attrs, c.__fparent);
+        }
+        else if (!c.__fc && v.__fc) {
+            c.__fc = v.__fc;
+            c.__fparent = null;
+            r = 1;
+        }
+        else if (c.__fc && v.__fc)
+            c.__fc.setProps(attrs);
+        else {
+            collect(c, false);
+            setAccessorSelf(c, attrs, c.__fparent);
+        }
+        idiff(c, gather(v));
+        if (r) {
+            c.__fc.dom = c;
+            c.__fc._initialProps();
+        }
+        return c;
     }
-    if (value) {
-        if (old && old.parentNode)
-            old.parentNode.replaceChild(value, old);
-        collect(old);
+    if (v) {
+        if (c && c.parentNode)
+            c.parentNode.replaceChild(v, c);
+        collect(c);
     }
     else
-        collect(old);
-    return value;
+        collect(c);
+    return v;
 };
 //# sourceMappingURL=diff.js.map
