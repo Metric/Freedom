@@ -49,7 +49,7 @@ export function updateChildProps(dom, newProps, parent) {
             idn = f.id ? `${n}[id="${f.id}"]` : "";
             nn = nn ? `${n}[name="${nn}"]` : "";
             cn = f.className ? `${n}[class="${f.className}"]` : "";
-            value = newProps[idn] || newProps[cn] || newProps[nn] || newProps[n] || {};
+            value = newProps[idn] || newProps[cn] || newProps[nn] || newProps[n] || null;
             if (f.__fc && value) {
                 f.__fc.setProps(value);
             }
@@ -68,7 +68,7 @@ export function updateChildProps(dom, newProps, parent) {
         idn = dom.id ? `${n}[id="${dom.id}"]` : "";
         nn = nn ? `${n}[name="${nn}"]` : "";
         cn = dom.className ? `${n}[class="${dom.className}"]` : "";
-        value = newProps[idn] || newProps[cn] || newProps[nn] || newProps[n] || {};
+        value = newProps[idn] || newProps[cn] || newProps[nn] || newProps[n] || null;
         if (dom.__fc && value) {
             dom.__fc.setProps(value);
         }

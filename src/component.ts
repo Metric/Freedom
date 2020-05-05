@@ -58,7 +58,7 @@ export function updateChildProps(dom: Element | Array<Element | Node>, newProps:
             idn = (<Element>f).id ? `${n}[id="${(<Element>f).id}"]` : "";
             nn = nn ? `${n}[name="${nn}"]` : "";
             cn = (<Element>f).className ? `${n}[class="${(<Element>f).className}"]` : "";
-            value = newProps[idn] || newProps[cn] || newProps[nn] || newProps[n] || {};
+            value = newProps[idn] || newProps[cn] || newProps[nn] || newProps[n] || null;
             if ((<any>f).__fc && value) {
                 (<any>f).__fc.setProps(value);
             } else if (!(<any>f).__fc && value) {
@@ -73,7 +73,7 @@ export function updateChildProps(dom: Element | Array<Element | Node>, newProps:
         idn = (<Element>dom).id ? `${n}[id="${(<Element>dom).id}"]` : "";
         nn = nn ? `${n}[name="${nn}"]` : "";
         cn = (<Element>dom).className ? `${n}[class="${(<Element>dom).className}"]` : "";
-        value = newProps[idn] || newProps[cn] || newProps[nn] || newProps[n] || {};
+        value = newProps[idn] || newProps[cn] || newProps[nn] || newProps[n] || null;
         if ((<any>dom).__fc && value) {
             (<any>dom).__fc.setProps(value);
         } else if (!(<any>dom).__fc && value) {

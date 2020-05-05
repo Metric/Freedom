@@ -25,8 +25,11 @@ export function render(base: Element) {
             if (globalThis[n]) new globalThis[n](c);
             else setAccessorSelf(c, getProps(c), c.__fparent);
         }
-        for (let i = 0; i < c.children.length; ++i) {
-            stack.unshift(c.children.item(i));
+        //don't double dip if we created a component
+        if (!c.__fc) {
+            for (let i = 0; i < c.children.length; ++i) {
+                stack.unshift(c.children.item(i));
+            }
         }
     }
 }

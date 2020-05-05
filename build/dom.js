@@ -216,25 +216,12 @@ export const setAccessor = (node, name, old, value, parent) => {
         }
     }
     else if (name[0] === "o" && name[1] === "n") {
-        let f = parent, p = parent, s, spl;
+        let f = parent, p = parent, k;
         let useCapture = name !== (name = name.replace(/capture$/, ""));
         name = name.toLowerCase().substring(2);
-        if (old) {
-            f = parent;
-            if (typeof old === "string") {
-                if (!f)
-                    return;
-                spl = old.split(".");
-                while (spl.length && f) {
-                    s = spl.shift();
-                    f = f[s];
-                }
-                if (!f || typeof f !== "function")
-                    return;
-                node.removeEventListener(name, f, useCapture);
-            }
-            else
-                node.removeEventListener(name, old, useCapture);
+        k = `__$${name}`;
+        if (node[k]) {
+            node.removeEventListener(name, node[k], useCapture);
             node.removeAttribute("on" + name);
         }
         if (value) {
@@ -244,6 +231,7 @@ export const setAccessor = (node, name, old, value, parent) => {
                 return;
             }
             node.addEventListener(name, f, useCapture);
+            node[k] = f;
             node.removeAttribute("on" + name);
         }
     }
