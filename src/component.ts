@@ -113,7 +113,7 @@ export class Component {
         if (!this.children.length) {
             this.children = cloneNodeCache(this.dom);
             this._initialRender(false);
-        } else {
+        } else if (!(<any>this.dom).__fskip) {
             if (!inNodeCache(this.dom)) assignNodeCache(this.dom);
             this._initialRender(false);
         }
