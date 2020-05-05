@@ -15,7 +15,7 @@ export function render(base: Element) {
     n = bc.nodeName.toLowerCase();
     if (!(<any>bc).__fc) {
         if (globalThis[n]) new globalThis[n](bc);
-        else setAccessorSelf(bc, getProps(bc), null);
+        else setAccessorSelf(bc, getProps(bc), (<any>bc).__fparent);
     }
 
     while (stack.length) {
@@ -23,7 +23,7 @@ export function render(base: Element) {
         n = c.nodeName.toLowerCase();
         if (!c.__fc) {
             if (globalThis[n]) new globalThis[n](c);
-            else setAccessorSelf(c, getProps(c), null);
+            else setAccessorSelf(c, getProps(c), c.__fparent);
         }
         for (let i = 0; i < c.children.length; ++i) {
             stack.unshift(c.children.item(i));
