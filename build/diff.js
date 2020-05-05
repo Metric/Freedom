@@ -23,7 +23,7 @@ export const idiff = (old, value) => {
     if (Array.isArray(value)) {
         if (children.length === value.length) {
             while (children.length && value.length)
-                diff(children.pop(), value.pop());
+                diff(children.shift(), value.shift());
         }
         else if (children.length < value.length) {
             for (let i = 0; i < children.length; ++i)
@@ -33,20 +33,20 @@ export const idiff = (old, value) => {
         }
         else if (children.length > value.length) {
             while (children.length > value.length)
-                collect(children.pop());
+                collect(children.shift());
             while (children.length && value.length)
-                diff(children.pop(), value.pop());
+                diff(children.shift(), value.shift());
         }
         return old;
     }
     if (children.length > 1 && value) {
         while (children.length > 1)
-            collect(children.pop());
+            collect(children.shift());
         diff(children[0], value);
     }
     else if (children.length && !value) {
         while (children.length)
-            collect(children.pop());
+            collect(children.shift());
     }
     else if (!children.length && value) {
         old.appendChild(value);

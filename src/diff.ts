@@ -21,21 +21,21 @@ export const idiff = (old: Element | Node, value: Element | Node | Array<Element
     const children = gather(old);
     if (Array.isArray(value)) {
         if (children.length === value.length) {
-            while (children.length && value.length) diff(children.pop(), value.pop());
+            while (children.length && value.length) diff(children.shift(), value.shift());
         } else if (children.length < value.length) {
             for (let i = 0; i < children.length; ++i) diff(children[i], value[i]);
             for (let i = children.length; i < value.length; ++i) old.appendChild(value[i]);
         } else if (children.length > value.length) {
-            while (children.length > value.length) collect(children.pop());
-            while (children.length && value.length) diff(children.pop(), value.pop());
+            while (children.length > value.length) collect(children.shift());
+            while (children.length && value.length) diff(children.shift(), value.shift());
         }
         return old;
     }
     if (children.length > 1 && value) {
-        while (children.length > 1) collect(children.pop());
+        while (children.length > 1) collect(children.shift());
         diff(children[0], value);
     } else if (children.length && !value) {
-        while (children.length) collect(children.pop());
+        while (children.length) collect(children.shift());
     } else if (!children.length && value) {
         old.appendChild(value);
     } else if (children.length === 1 && value) {
