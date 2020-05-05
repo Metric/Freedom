@@ -132,6 +132,7 @@ export declare const VALID_ATTRIBUTE_LOOKUP: {
     width: number;
     wrap: number;
 };
+export declare const bindToParent: (value: any, parent: Component) => any;
 export declare const setAccessor: (node: Element, name: string, old: any, value: any, parent: Component) => void;
 export declare const getProps: (node: Element) => any;
 export declare const setAccessorSelf: (node: Element, props: any, parent: Component) => void;

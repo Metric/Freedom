@@ -134,6 +134,36 @@ export const VALID_ATTRIBUTE_LOOKUP = {
     wrap: 1,
 };
 
+export const bindToParent = (value: any, parent: Component) => {
+    let f: any = parent,
+        p,
+        s,
+        spl;
+    if (typeof value === "function" && f) {
+        if (f[value.name] && !value.bound) {
+            s = value.name;
+            value = value.bind(f);
+            value.bound = 1;
+            f[s] = value;
+        }
+    } else if (typeof value === "string" && f) {
+        spl = value.split(".");
+        p = f;
+        while (spl.length && f) {
+            p = f;
+            s = spl.shift();
+            f = f[s];
+        }
+        if (typeof f === "function" && !f.bound) {
+            f = f.bind(p);
+            f.bound = 1;
+            p[s] = f;
+            value = f;
+        }
+    }
+    return value;
+};
+
 export const setAccessor = (node: Element, name: string, old: any, value: any, parent: Component) => {
     if (!node) return;
     if (name === "className") name = "class";
@@ -175,7 +205,10 @@ export const setAccessor = (node: Element, name: string, old: any, value: any, p
             (<HTMLElement>node).style.cssText = value || "";
         }
     } else if (name[0] === "o" && name[1] === "n") {
-        let f, p, s, spl;
+        let f = parent,
+            p = parent,
+            s,
+            spl;
         let useCapture = name !== (name = name.replace(/capture$/, ""));
         name = name.toLowerCase().substring(2);
         if (old) {
@@ -193,27 +226,12 @@ export const setAccessor = (node: Element, name: string, old: any, value: any, p
             node.removeAttribute("on" + name);
         }
         if (value) {
-            f = parent;
-            if (typeof value === "string") {
-                if (!f) return;
-                spl = value.split(".");
-                p = f;
-                while (spl.length && f) {
-                    p = f;
-                    s = spl.shift();
-                    f = f[s];
-                }
-                if (!f || typeof f !== "function") {
-                    console.warn(`Component: ${p.constructor.name} missing event handler for ${name} with name ${value}`);
-                    return;
-                }
-                if (!f.bound) {
-                    f = f.bind(p);
-                    f.bound = 1;
-                    p[s] = f;
-                }
-                node.addEventListener(name, f, useCapture);
-            } else node.addEventListener(name, value, useCapture);
+            f = bindToParent(value, parent);
+            if (!f || typeof f !== "function") {
+                console.warn(`Component: ${p.constructor.name} missing event handler for ${name} with name ${value}`);
+                return;
+            }
+            node.addEventListener(name, f, useCapture);
             node.removeAttribute("on" + name);
         }
     } else if (name !== "list" && name !== "type" && name in node) {
@@ -229,33 +247,7 @@ export const setAccessor = (node: Element, name: string, old: any, value: any, p
             custom[name] = null;
         } else if (typeof value !== "function" && VALID_ATTRIBUTE_LOOKUP[name]) node.setAttribute(name, value);
         else {
-            let f: any = parent,
-                p,
-                s,
-                spl;
-            node.removeAttribute(name);
-            if (typeof value === "function" && f) {
-                if (f[value.name] && !value.bound) {
-                    s = value.name;
-                    value = value.bind(f);
-                    value.bound = 1;
-                    f[s] = value;
-                }
-            } else if (typeof value === "string" && f) {
-                spl = value.split(".");
-                p = f;
-                while (spl.length && f) {
-                    p = f;
-                    s = spl.shift();
-                    f = f[s];
-                }
-                if (typeof f === "function" && !f.bound) {
-                    f = f.bind(p);
-                    f.bound = 1;
-                    p[s] = f;
-                    value = f;
-                }
-            }
+            value = bindToParent(value, parent);
             custom[name] = value;
         }
         (<any>node).customAttributes = custom;
