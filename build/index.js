@@ -14,8 +14,8 @@ export function render(base) {
     if (!bc.__fc) {
         if (globalThis[n])
             new globalThis[n](bc);
-        else if (!bc.__fparent)
-            setAccessorSelf(bc, getProps(bc), null);
+        else
+            setAccessorSelf(bc, getProps(bc), bc.__fparent);
     }
     while (stack.length) {
         const c = stack.pop();
@@ -23,8 +23,8 @@ export function render(base) {
         if (!c.__fc) {
             if (globalThis[n])
                 new globalThis[n](c);
-            else if (!c.__fparent)
-                setAccessorSelf(c, getProps(c), null);
+            else
+                setAccessorSelf(c, getProps(c), c.__fparent);
         }
         for (let i = 0; i < c.children.length; ++i) {
             stack.unshift(c.children.item(i));
