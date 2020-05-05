@@ -9,7 +9,10 @@ const inNodeCache = (dom: Element) => {
 };
 
 const assignNodeCache = (dom: Element) => {
-    NODE_CACHE.set(dom.nodeName.toLowerCase(), gather(dom));
+    NODE_CACHE.set(
+        dom.nodeName.toLowerCase(),
+        gather(dom).map((c) => c.cloneNode(true))
+    );
 };
 
 const cloneNodeCache = (dom: Element): Array<Element | Node> => {
@@ -97,6 +100,7 @@ export class Component {
         this.props = {};
         this._propStateMap = new Map<string, string>();
         this.children = gather(this.dom);
+        if (!inNodeCache(this.dom)) assignNodeCache(this.dom);
         (<any>this.dom).__fc = this;
         if (this.dom.parentNode && (<any>this.dom).parentNode.__fc) this.parent = (<any>this.dom).parentNode.__fc;
         const attrs = Array.from(dom.attributes);
@@ -114,7 +118,6 @@ export class Component {
             this.children = cloneNodeCache(this.dom);
             this._initialRender(false);
         } else {
-            if (!inNodeCache(this.dom)) assignNodeCache(this.dom);
             this._initialRender(false);
         }
     }
