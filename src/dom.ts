@@ -200,6 +200,7 @@ export function createElement(name: string, attributes: any, ...children: Array<
     (<any>p).customAttributes = custom;
     while (stack.length) {
         child = stack.pop();
+        if (!child) continue;
         if (Array.isArray(child)) child.forEach((c) => stack.unshift(c));
         else if (typeof child !== "object") p.appendChild(document.createTextNode(child));
         else p.appendChild(child);

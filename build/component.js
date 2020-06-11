@@ -47,6 +47,8 @@ export function updateChildProps(dom, newProps, parent) {
         return;
     if (Array.isArray(dom)) {
         dom.forEach((f) => {
+            if (!f)
+                return;
             if (!f.attributes)
                 return;
             n = f.nodeName.toLowerCase();
@@ -145,6 +147,8 @@ export class Component {
             if (Array.isArray(d)) {
                 d = Array.from(d);
                 for (let i = 0; i < d.length; ++i) {
+                    if (!d[i])
+                        continue;
                     d[i].__fskip = this.dom.__fskip;
                     render(d[i]);
                 }
@@ -176,6 +180,8 @@ export class Component {
                 d = Array.from(d);
                 for (let i = 0; i < d.length; ++i) {
                     c = d[i];
+                    if (!c)
+                        continue;
                     c.__fskip = true;
                     render(c);
                 }

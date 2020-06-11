@@ -20,6 +20,7 @@ export function render(base: Element) {
 
     while (stack.length) {
         const c: any = stack.pop();
+        if (!c) continue;
         n = c.nodeName.toLowerCase();
         if (!c.__fc) {
             if (globalThis[n]) new globalThis[n](c);

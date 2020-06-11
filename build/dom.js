@@ -215,6 +215,8 @@ export function createElement(name, attributes, ...children) {
     p.customAttributes = custom;
     while (stack.length) {
         child = stack.pop();
+        if (!child)
+            continue;
         if (Array.isArray(child))
             child.forEach((c) => stack.unshift(c));
         else if (typeof child !== "object")

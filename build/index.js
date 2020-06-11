@@ -19,6 +19,8 @@ export function render(base) {
     }
     while (stack.length) {
         const c = stack.pop();
+        if (!c)
+            continue;
         n = c.nodeName.toLowerCase();
         if (!c.__fc) {
             if (globalThis[n])
