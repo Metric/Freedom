@@ -1,139 +1,5 @@
 import { Component } from "./index";
 
-export const VALID_ATTRIBUTE_LOOKUP = {
-    accept: 1,
-    "accept-charset": 1,
-    accesskey: 1,
-    action: 1,
-    align: 1,
-    allow: 1,
-    alt: 1,
-    async: 1,
-    autocapitalize: 1,
-    autocomplete: 1,
-    autofocus: 1,
-    autoplay: 1,
-    background: 1,
-    bgcolor: 1,
-    border: 1,
-    buffered: 1,
-    capture: 1,
-    challenge: 1,
-    charset: 1,
-    checked: 1,
-    cite: 1,
-    class: 1,
-    code: 1,
-    codebase: 1,
-    color: 1,
-    cols: 1,
-    colspan: 1,
-    content: 1,
-    contenteditable: 1,
-    contextmenu: 1,
-    controls: 1,
-    coords: 1,
-    crossorigin: 1,
-    csp: 1,
-    data: 1,
-    datetime: 1,
-    decoding: 1,
-    default: 1,
-    defer: 1,
-    dir: 1,
-    dirname: 1,
-    disabled: 1,
-    download: 1,
-    draggable: 1,
-    dropzone: 1,
-    enctype: 1,
-    enterkeyhint: 1,
-    for: 1,
-    form: 1,
-    formaction: 1,
-    formenctype: 1,
-    formmethod: 1,
-    formnovalidate: 1,
-    formtarget: 1,
-    headers: 1,
-    height: 1,
-    hidden: 1,
-    high: 1,
-    href: 1,
-    hreflang: 1,
-    "http-equiv": 1,
-    icon: 1,
-    id: 1,
-    importance: 1,
-    integrity: 1,
-    intrinsicsize: 1,
-    inputmode: 1,
-    ismap: 1,
-    itemprop: 1,
-    keytype: 1,
-    kind: 1,
-    label: 1,
-    lang: 1,
-    language: 1,
-    loading: 1,
-    list: 1,
-    loop: 1,
-    low: 1,
-    manifest: 1,
-    max: 1,
-    maxlength: 1,
-    minlength: 1,
-    media: 1,
-    method: 1,
-    min: 1,
-    multiple: 1,
-    muted: 1,
-    name: 1,
-    novalidate: 1,
-    open: 1,
-    optimum: 1,
-    pattern: 1,
-    ping: 1,
-    placeholder: 1,
-    poster: 1,
-    preload: 1,
-    radiogroup: 1,
-    readonly: 1,
-    referrerpolicy: 1,
-    rel: 1,
-    required: 1,
-    reversed: 1,
-    rows: 1,
-    rowspan: 1,
-    sandbox: 1,
-    scope: 1,
-    scoped: 1,
-    selected: 1,
-    shape: 1,
-    size: 1,
-    sizes: 1,
-    slot: 1,
-    span: 1,
-    spellcheck: 1,
-    src: 1,
-    srcdoc: 1,
-    srclang: 1,
-    srcset: 1,
-    start: 1,
-    step: 1,
-    style: 1,
-    summary: 1,
-    tabindex: 1,
-    target: 1,
-    title: 1,
-    translate: 1,
-    type: 1,
-    usemap: 1,
-    value: 1,
-    width: 1,
-    wrap: 1,
-};
-
 export const bindToParent = (value: any, parent: Component) => {
     let f: any = parent,
         p,
@@ -166,7 +32,6 @@ export const bindToParent = (value: any, parent: Component) => {
 
 export const setAccessor = (node: Element, name: string, old: any, value: any, parent: Component) => {
     if (!node) return;
-    if (node instanceof SVGElement || node instanceof SVGAElement || node instanceof SVGAngle) return;
     if (name === "className") name = "class";
     if (name === "__html") name = "html";
     else if (name === "ref") {
@@ -181,6 +46,8 @@ export const setAccessor = (node: Element, name: string, old: any, value: any, p
             node.innerHTML = value;
         }
     } else if (name === "class") {
+        if (node instanceof SVGElement || node instanceof SVGAElement || node instanceof SVGAngle) return;
+
         if (!value || typeof value === "string") {
             node.className = value || "";
         } else if (value && typeof value === "object") {
@@ -195,6 +62,8 @@ export const setAccessor = (node: Element, name: string, old: any, value: any, p
             }
         }
     } else if (name === "style") {
+        if (node instanceof SVGElement || node instanceof SVGAElement || node instanceof SVGAngle) return;
+
         if (value && typeof value === "object") {
             if (typeof old === "object") {
                 for (let i in old) {
@@ -238,10 +107,13 @@ export const setAccessor = (node: Element, name: string, old: any, value: any, p
         if (value == null || value === false) {
             node.removeAttribute(name);
             custom[name] = null;
-        } else if (typeof value !== "function" && VALID_ATTRIBUTE_LOOKUP[name]) node.setAttribute(name, value);
-        else {
+        } else if (typeof value === "string") {
             const fn = bindToParent(value, parent);
-            value = fn ? fn : value;
+            if (fn) {
+                custom[name] = fn;
+                node.removeAttribute(name);
+            } else node.setAttribute(name, value);
+        } else {
             custom[name] = value;
             node.removeAttribute(name);
         }
@@ -322,7 +194,7 @@ export function createElement(name: string, attributes: any, ...children: Array<
     children.forEach((c) => stack.unshift(c));
     const custom = (<any>p).customAttributes || {};
     for (let k in attributes) {
-        if (VALID_ATTRIBUTE_LOOKUP[k.toLowerCase()] && typeof attributes[k] !== "function") p.setAttribute(k, attributes[k].toString());
+        if (typeof attributes[k] === "string") p.setAttribute(k, attributes[k]);
         else custom[k] = attributes[k];
     }
     (<any>p).customAttributes = custom;
