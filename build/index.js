@@ -5,9 +5,6 @@ export function render(base) {
     const stack = new Array();
     if (!bc)
         return;
-    if (bc.nodeName.toLowerCase() === "svg") {
-        return;
-    }
     if (bc.children) {
         for (let i = 0; i < bc.children.length; ++i) {
             stack.unshift(bc.children.item(i));
@@ -23,9 +20,6 @@ export function render(base) {
     while (stack.length) {
         const c = stack.pop();
         n = c.nodeName.toLowerCase();
-        if (n === "svg") {
-            continue;
-        }
         if (!c.__fc) {
             if (globalThis[n])
                 new globalThis[n](c);
