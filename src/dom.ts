@@ -239,8 +239,10 @@ export const setAccessor = (node: Element, name: string, old: any, value: any, p
             custom[name] = null;
         } else if (typeof value !== "function" && VALID_ATTRIBUTE_LOOKUP[name]) node.setAttribute(name, value);
         else {
-            value = bindToParent(value, parent);
+            const fn = bindToParent(value, parent);
+            value = fn ? fn : value;
             custom[name] = value;
+            node.removeAttribute(name);
         }
         (<any>node).customAttributes = custom;
     }
