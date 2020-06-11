@@ -5,7 +5,7 @@ export function render(base) {
     const stack = new Array();
     if (!bc)
         return;
-    if (bc.nodeName.toLowerCase() == "#<svgsvgelement>") {
+    if (bc.nodeName.toLowerCase() === "svg") {
         return;
     }
     if (bc.children) {
@@ -23,7 +23,7 @@ export function render(base) {
     while (stack.length) {
         const c = stack.pop();
         n = c.nodeName.toLowerCase();
-        if (n === "#<svgsvgelement>") {
+        if (n === "svg") {
             continue;
         }
         if (!c.__fc) {

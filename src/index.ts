@@ -6,7 +6,7 @@ export function render(base: Element) {
         bc: Element = base;
     const stack = new Array<Element>();
     if (!bc) return;
-    if (bc.nodeName.toLowerCase() == "#<svgsvgelement>") {
+    if (bc.nodeName.toLowerCase() === "svg") {
         return;
     }
     if (bc.children) {
@@ -25,7 +25,7 @@ export function render(base: Element) {
         const c: any = stack.pop();
         n = c.nodeName.toLowerCase();
 
-        if (n === "#<svgsvgelement>") {
+        if (n === "svg") {
             continue;
         }
 
