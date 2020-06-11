@@ -166,7 +166,7 @@ export const bindToParent = (value: any, parent: Component) => {
 
 export const setAccessor = (node: Element, name: string, old: any, value: any, parent: Component) => {
     if (!node) return;
-    if (node.nodeName.toLowerCase().includes("svgelement")) return;
+    if (node instanceof SVGAElement || node instanceof SVGAElement || node instanceof SVGAngle) return;
     if (name === "className") name = "class";
     if (name === "__html") name = "html";
     else if (name === "ref") {
