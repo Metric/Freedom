@@ -6,6 +6,9 @@ export function render(base: Element) {
         bc: Element = base;
     const stack = new Array<Element>();
     if (!bc) return;
+    if (bc.nodeName.toLowerCase() == "#<svgsvgelement>") {
+        return;
+    }
     if (bc.children) {
         for (let i = 0; i < bc.children.length; ++i) {
             stack.unshift(bc.children.item(i));
@@ -21,6 +24,11 @@ export function render(base: Element) {
     while (stack.length) {
         const c: any = stack.pop();
         n = c.nodeName.toLowerCase();
+
+        if (n === "#<svgsvgelement>") {
+            continue;
+        }
+
         if (!c.__fc) {
             if (globalThis[n]) new globalThis[n](c);
             else setAccessorSelf(c, getProps(c), c.__fparent);
