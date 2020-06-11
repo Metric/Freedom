@@ -86,7 +86,7 @@ export const diff = (old, value) => {
             r = 1;
         }
         else if (c.__fc && v.__fc)
-            c.__fc.setProps(attrs);
+            c.__fc.setProps(v.__fc.props);
         else {
             collect(c, false);
             setAccessorSelf(c, attrs, c.__fparent);
