@@ -64,7 +64,7 @@ export function updateChildProps(dom: Element | Array<Element | Node>, newProps:
             if (!(<Element>f).attributes) return;
             n = f.nodeName.toLowerCase();
             nn = (<Element>f).getAttribute("name");
-            idn = (<Element>f).id ? `${n}[id="${(<Element>f).id}"]` : "";
+            idn = (<Element>f).getAttribute("id") ? `${n}[id="${(<Element>f).getAttribute("id")}"]` : "";
             nn = nn ? `${n}[name="${nn}"]` : "";
             cn = (<Element>f).className ? `${n}[class="${(<Element>f).className}"]` : "";
             value = newProps[idn] || newProps[cn] || newProps[nn] || newProps[n] || null;
@@ -79,7 +79,7 @@ export function updateChildProps(dom: Element | Array<Element | Node>, newProps:
         if (!dom.attributes) return;
         n = dom.nodeName.toLowerCase();
         nn = (<Element>dom).getAttribute("name");
-        idn = (<Element>dom).id ? `${n}[id="${(<Element>dom).id}"]` : "";
+        idn = (<Element>dom).getAttribute("id") ? `${n}[id="${(<Element>dom).getAttribute("id")}"]` : "";
         nn = nn ? `${n}[name="${nn}"]` : "";
         cn = (<Element>dom).className ? `${n}[class="${(<Element>dom).className}"]` : "";
         value = newProps[idn] || newProps[cn] || newProps[nn] || newProps[n] || null;

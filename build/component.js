@@ -53,7 +53,7 @@ export function updateChildProps(dom, newProps, parent) {
                 return;
             n = f.nodeName.toLowerCase();
             nn = f.getAttribute("name");
-            idn = f.id ? `${n}[id="${f.id}"]` : "";
+            idn = f.getAttribute("id") ? `${n}[id="${f.getAttribute("id")}"]` : "";
             nn = nn ? `${n}[name="${nn}"]` : "";
             cn = f.className ? `${n}[class="${f.className}"]` : "";
             value = newProps[idn] || newProps[cn] || newProps[nn] || newProps[n] || null;
@@ -72,7 +72,7 @@ export function updateChildProps(dom, newProps, parent) {
             return;
         n = dom.nodeName.toLowerCase();
         nn = dom.getAttribute("name");
-        idn = dom.id ? `${n}[id="${dom.id}"]` : "";
+        idn = dom.getAttribute("id") ? `${n}[id="${dom.getAttribute("id")}"]` : "";
         nn = nn ? `${n}[name="${nn}"]` : "";
         cn = dom.className ? `${n}[class="${dom.className}"]` : "";
         value = newProps[idn] || newProps[cn] || newProps[nn] || newProps[n] || null;
